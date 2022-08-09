@@ -1,14 +1,16 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import styled from "styled-components";
 
-import logo from './logo.png';
-import search from './search.png';
-import cart from './cart.png';
-import cartMobile from './cart-mobile.png';
-import profile from './profile.png';
-import profileMobile from './profile-mobile.png';
-import CartContext from '../../contexts/CartContext';
+import logo from "./logo.png";
+import search from "./search.png";
+import cart from "./cart.png";
+import cartMobile from "./cart-mobile.png";
+import profile from "./profile.png";
+import profileMobile from "./profile-mobile.png";
+import social from "./social.png";
+import socialMobile from "./social-mobile.png";
+import CartContext from "../../contexts/CartContext";
 
 const Wrapper = styled.div`
   position: fixed;
@@ -66,14 +68,14 @@ const CategoryLink = styled(Link)`
   padding-right: 11px;
   position: relative;
   text-decoration: none;
-  color: ${(props) => (props.$isActive ? '#8b572a' : '#3f3a3a')};
+  color: ${(props) => (props.$isActive ? "#8b572a" : "#3f3a3a")};
 
   @media screen and (max-width: 1279px) {
     font-size: 16px;
     letter-spacing: normal;
     padding: 0;
     text-align: center;
-    color: ${(props) => (props.$isActive ? 'white' : '#828282')};
+    color: ${(props) => (props.$isActive ? "white" : "#828282")};
     line-height: 50px;
     flex-grow: 1;
   }
@@ -87,7 +89,7 @@ const CategoryLink = styled(Link)`
   }
 
   & + &::before {
-    content: '|';
+    content: "|";
     position: absolute;
     left: 0;
     color: #3f3a3a;
@@ -167,7 +169,7 @@ const PageLink = styled(Link)`
 
   & + &::before {
     @media screen and (max-width: 1279px) {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       width: 1px;
@@ -202,6 +204,20 @@ const PageLinkProfileIcon = styled(PageLinkIcon)`
   }
 `;
 
+const PageLinkSocialIcon = styled(PageLinkIcon)`
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 34px 34px;
+  background-image: url(${social});
+
+  @media screen and (max-width: 1279px) {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 34px 34px;
+    background-image: url(${socialMobile});
+  }
+`;
+
 const PageLinkIconNumber = styled.div`
   position: absolute;
   bottom: 0;
@@ -226,28 +242,28 @@ const PageLinkText = styled.div`
 
 const categories = [
   {
-    name: 'women',
-    displayText: '女裝',
+    name: "women",
+    displayText: "女裝",
   },
   {
-    name: 'men',
-    displayText: '男裝',
+    name: "men",
+    displayText: "男裝",
   },
   {
-    name: 'accessories',
-    displayText: '配件',
+    name: "accessories",
+    displayText: "配件",
   },
 ];
 
 function Header() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const category = searchParams.get('category');
+  const category = searchParams.get("category");
   const { getItems } = useContext(CartContext);
 
   useEffect(() => {
-    if (category) setInputValue('');
+    if (category) setInputValue("");
   }, [category]);
 
   return (
@@ -266,7 +282,7 @@ function Header() {
       </CategoryLinks>
       <SearchInput
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             navigate(`/?keyword=${inputValue}`);
           }
         }}
@@ -283,6 +299,10 @@ function Header() {
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
           <PageLinkText>會員</PageLinkText>
+        </PageLink>
+        <PageLink to="/social">
+          <PageLinkSocialIcon icon={social} />
+          <PageLinkText>社群</PageLinkText>
         </PageLink>
       </PageLinks>
     </Wrapper>
