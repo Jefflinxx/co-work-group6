@@ -122,6 +122,11 @@ const CloseBtn = styled.button`
     color: white;
   }
 `
+
+const CheckInBtn = styled(Btn)`
+  cursor: not-allowed;
+`
+
 const BackOver = styled.div`
   ${'' /* display: none; */}
   position: fixed;
@@ -196,28 +201,29 @@ const NotMemberText = styled.div`
     opacity: 40%;
   }
 `
+
 function Profile() {
-  // const [profile, setProfile] = useState();
+  const [fbprofile, setfbProfile] = useState()
 
-  // useEffect(() => {
-  //   async function getProfile() {
-  //     let jwtToken = window.localStorage.getItem('jwtToken');
+  useEffect(() => {
+    async function getProfile() {
+      let jwtToken = window.localStorage.getItem('jwtToken')
 
-  //     if (!jwtToken) {
-  //       try {
-  //         jwtToken = await getJwtToken();
-  //       } catch (e) {
-  //         window.alert(e.message);
-  //         return;
-  //       }
-  //     }
-  //     window.localStorage.setItem('jwtToken', jwtToken);
+      if (!jwtToken) {
+        try {
+          jwtToken = await getJwtToken()
+        } catch (e) {
+          window.alert(e.message)
+          return
+        }
+      }
+      window.localStorage.setItem('jwtToken', jwtToken)
 
-  //     const { data } = await api.getProfile(jwtToken);
-  //     setProfile(data);
-  //   }
-  //   getProfile();
-  // }, []);
+      const { data } = await api.getProfile(jwtToken)
+      setfbProfile(data)
+    }
+    getProfile()
+  }, [])
 
   return (
     <Wrapper>
@@ -229,7 +235,8 @@ function Profile() {
           <HotImageList />
         </HotImage>
         <SubTitle>用以下帳號繼續</SubTitle>
-        <Btn>使用Facebook登入</Btn>
+        <Btn onClick={Profile}>使用Facebook登入</Btn>
+        {fbprofile && <CheckInBtn>已登入</CheckInBtn>}
         <SubTitle>或用 超會搭 帳號</SubTitle>
         <Divide>
           <Popup trigger={<BtnMember>註冊</BtnMember>} modal>
