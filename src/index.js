@@ -1,14 +1,15 @@
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import App from './App';
-import Checkout from './pages/Checkout/Checkout';
-import Home from './pages/Home/Home';
-import ThankYou from './pages/ThankYou/ThankYou';
-import Product from './pages/Product/Product';
-import Profile from './pages/Profile/Profile';
+import App from "./App";
+import Checkout from "./pages/Checkout/Checkout";
+import Home from "./pages/Home/Home";
+import ThankYou from "./pages/ThankYou/ThankYou";
+import Product from "./pages/Product/Product";
+import Profile from "./pages/Profile/Profile";
+import Social from "./pages/Social/Social";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
@@ -19,6 +20,7 @@ root.render(
         <Route path="checkout" element={<Checkout />} />
         <Route path="thankyou" element={<ThankYou />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="social" element={<Social />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
