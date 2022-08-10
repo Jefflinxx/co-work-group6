@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import styled from 'styled-components'
 import main from './main.png'
 import facebook from './facebook.png'
@@ -10,6 +10,7 @@ import Popup from 'reactjs-popup'
 
 import api from '../../utils/api'
 import getJwtToken from '../../utils/getJwtToken'
+import fb from '../../utils/fb'
 
 const Wrapper = styled.div`
   padding: 60px 20px;
@@ -73,6 +74,10 @@ const SubTitle = styled(Title)`
     background-color: #3f3a3a;
   }
 `
+const SubTitleYes = styled(Title)`
+  font-size: 16px;
+  margin-top: 40px;
+`
 const Btn = styled.button`
   width: 250px;
   brder-radius: 3px;
@@ -122,11 +127,17 @@ const CloseBtn = styled.button`
     color: white;
   }
 `
-
 const CheckInBtn = styled(Btn)`
   cursor: not-allowed;
+  ${'' /* background-image: url(${fbprofile.picture}); */}
 `
-
+const CheckOutBtn = styled.div`
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+`
 const BackOver = styled.div`
   ${'' /* display: none; */}
   position: fixed;
@@ -201,106 +212,191 @@ const NotMemberText = styled.div`
     opacity: 40%;
   }
 `
-
+const Reminder = styled.span`
+  color: red;
+  font-size: 12px;
+  margin-left: 12px;
+`
 function Profile() {
   const [fbprofile, setfbProfile] = useState()
+  const [reminder, setReminder] = useState(false)
+  const [isRegister, setIsRegister] = useState(false)
+  const accountRef = useRef()
+  const passwordRef = useRef()
+  const emailRef = useRef()
 
-  useEffect(() => {
-    async function getProfile() {
-      let jwtToken = window.localStorage.getItem('jwtToken')
-
-      if (!jwtToken) {
-        try {
-          jwtToken = await getJwtToken()
-        } catch (e) {
-          window.alert(e.message)
-          return
-        }
+  let jwtToken = window.localStorage.getItem('jwtToken')
+  async function getProfile() {
+    if (!jwtToken) {
+      try {
+        jwtToken = await getJwtToken()
+      } catch (e) {
+        window.alert(e.message)
+        return
       }
-      window.localStorage.setItem('jwtToken', jwtToken)
-
-      const { data } = await api.getProfile(jwtToken)
-      setfbProfile(data)
     }
-    getProfile()
-  }, [])
+    window.localStorage.setItem('jwtToken', jwtToken)
 
+    const { data } = await api.getProfile(jwtToken)
+    setfbProfile(data)
+  }
+
+  const register = async () => {
+    if (
+      !accountRef.current.value ||
+      !passwordRef.current.value ||
+      !emailRef.current.value
+    ) {
+      alert('表格不可為空')
+    } else {
+      let registerData = {
+        name: accountRef.current.value,
+        email: emailRef.current.value,
+        password: passwordRef.current.value,
+      }
+      console.log(registerData)
+      const response = await fetch(`https://hazlin.work/api/1.0/user/signup`, {
+        body: JSON.stringify(registerData),
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        }),
+        method: 'POST',
+      })
+      console.log(await response.json())
+
+      if (response.status === 200) {
+        let registerCheckedData = response.json()
+        let checkdData = registerCheckedData.data
+        alert('註冊成功')
+        setIsRegister(true)
+      } else if (response.status === 403) {
+        alert('email重複註冊')
+      }
+      return await response.json()
+    }
+  }
+
+  console.log(reminder)
+  const url = 'https://hazlin.work/api/1.0/order/10279'
+
+  const checkIn = async () => {
+    try {
+      let res = await fetch('https://hazlin.work/api/1.0/order/10279')
+      let userInfo = await res.json()
+      let userDetail = userInfo.data
+      console.log(userDetail)
+    } catch (err) {
+      console.log(`Error:${err}`)
+    }
+  }
   return (
     <Wrapper>
-      <Title>加入會員，引領潮流</Title>
-      <MainLogin>
-        <HotImage>
-          <HotImageList />
-          <HotImageList />
-          <HotImageList />
-        </HotImage>
-        <SubTitle>用以下帳號繼續</SubTitle>
-        <Btn onClick={Profile}>使用Facebook登入</Btn>
-        {fbprofile && <CheckInBtn>已登入</CheckInBtn>}
-        <SubTitle>或用 超會搭 帳號</SubTitle>
-        <Divide>
-          <Popup trigger={<BtnMember>註冊</BtnMember>} modal>
-            {(close) => (
-              <BackOver>
-                <Modal>
-                  <LoginForm>
-                    <Divide>
-                      <Logo />
-                      <CloseBtn
-                        onClick={() => {
-                          close()
-                        }}
-                      >
-                        x
-                      </CloseBtn>
-                    </Divide>
-                    <AccountLabel type="label">超會搭用戶名</AccountLabel>
-                    <AccountInput type="text"></AccountInput>
-                    <AccountLabel type="label">密碼</AccountLabel>
-                    <PasswordInput type="text"></PasswordInput>
-                    <AccountLabel type="label">Email</AccountLabel>
-                    <EmailInput type="text"></EmailInput>
-                    <Text>
-                      按下註冊鈕的同時，表示您已詳閱我們的資料使用政策與使用條款
-                    </Text>
-                    <BecomeMember>註冊</BecomeMember>
-                  </LoginForm>
-                </Modal>
-              </BackOver>
-            )}
-          </Popup>
-          <Popup trigger={<BtnMember>登入</BtnMember>} modal>
-            {(close) => (
-              <BackOver>
-                <Modal>
-                  <LoginForm>
-                    <Divide>
-                      <Logo />
-                      <CloseBtn
-                        onClick={() => {
-                          close()
-                        }}
-                      >
-                        x
-                      </CloseBtn>
-                    </Divide>
-                    <AccountLabel type="label">超會搭Email</AccountLabel>
-                    <AccountInput type="text"></AccountInput>
-                    <AccountLabel type="label">密碼</AccountLabel>
-                    <PasswordInput type="text"></PasswordInput>
-                    <BecomeMember>登入</BecomeMember>
-                    <Divide>
-                      <NotMemberText>
-                        還不是會員嗎？<span>立刻註冊新帳號</span>
-                      </NotMemberText>
-                    </Divide>
-                  </LoginForm>
-                </Modal>
-              </BackOver>
-            )}
-          </Popup>
-        </Divide>
-      </MainLogin>
+      {!fbprofile && (
+        <>
+          <Title>加入會員，引領潮流</Title>
+          <MainLogin>
+            <HotImage>
+              <HotImageList />
+              <HotImageList />
+              <HotImageList />
+            </HotImage>
+            <SubTitle>用以下帳號繼續</SubTitle>
+            <Btn onClick={getProfile}>使用Facebook登入</Btn>
+            <SubTitle>或用 超會搭 帳號</SubTitle>
+            <Divide>
+              {!isRegister && (
+                <Popup trigger={<BtnMember>註冊</BtnMember>} modal>
+                  {(close) => (
+                    <BackOver>
+                      <Modal>
+                        <LoginForm>
+                          <Divide>
+                            <Logo />
+                            <CloseBtn
+                              onClick={() => {
+                                close()
+                              }}
+                            >
+                              x
+                            </CloseBtn>
+                          </Divide>
+                          <AccountLabel type="label">超會搭用戶名</AccountLabel>
+                          <AccountInput
+                            type="text"
+                            ref={accountRef}
+                          ></AccountInput>
+                          <AccountLabel type="label">密碼</AccountLabel>
+                          <PasswordInput
+                            type="text"
+                            ref={passwordRef}
+                          ></PasswordInput>
+                          <AccountLabel type="label">Email</AccountLabel>
+                          {/* {reminder && <Reminder>Email重複註冊</Reminder>} */}
+                          <EmailInput type="text" ref={emailRef}></EmailInput>
+                          <Text>
+                            按下註冊鈕的同時，表示您已詳閱我們的資料使用政策與使用條款
+                          </Text>
+                          <BecomeMember onClick={register}>註冊</BecomeMember>
+                        </LoginForm>
+                      </Modal>
+                    </BackOver>
+                  )}
+                </Popup>
+              )}
+
+              <Popup trigger={<BtnMember>登入</BtnMember>} modal>
+                {(close) => (
+                  <BackOver>
+                    <Modal>
+                      <LoginForm>
+                        <Divide>
+                          <Logo />
+                          <CloseBtn
+                            onClick={() => {
+                              close()
+                            }}
+                          >
+                            x
+                          </CloseBtn>
+                        </Divide>
+                        <AccountLabel type="label">超會搭Email</AccountLabel>
+                        <AccountInput type="text"></AccountInput>
+                        <AccountLabel type="label">密碼</AccountLabel>
+                        <PasswordInput type="text"></PasswordInput>
+                        <BecomeMember onClick={checkIn}>登入</BecomeMember>
+                        <Divide>
+                          <NotMemberText>
+                            還不是會員嗎？<span>立刻註冊新帳號</span>
+                          </NotMemberText>
+                        </Divide>
+                      </LoginForm>
+                    </Modal>
+                  </BackOver>
+                )}
+              </Popup>
+            </Divide>
+          </MainLogin>
+        </>
+      )}
+      {fbprofile && (
+        <>
+          <Title>歡迎{fbprofile.name}邁向潮流教主</Title>
+          <MainLogin>
+            <HotImage>
+              <HotImageList />
+              <HotImageList />
+              <HotImageList />
+            </HotImage>
+            <SubTitleYes>已使用Facebook作為帳號</SubTitleYes>
+            <CheckInBtn>已登入</CheckInBtn>
+            <CheckOutBtn
+              onClick={() => window.localStorage.removeItem('jwtToken')}
+            >
+              登出
+            </CheckOutBtn>
+          </MainLogin>
+        </>
+      )}
     </Wrapper>
   )
 }
