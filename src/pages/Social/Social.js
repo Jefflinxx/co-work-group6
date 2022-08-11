@@ -4,6 +4,8 @@ import imagetest from "./imagetest.png";
 import heart from "./heart.png";
 import follow from "./follow.png";
 import save from "./save.png";
+import ball from "./ball.png";
+import rectangle from "./rectangle.png";
 
 function Social() {
   const Wrapper = styled.div`
@@ -17,9 +19,10 @@ function Social() {
 
   const ChangeModeWrapper = styled.div`
     height: 40px;
-    border: 1px solid black;
+
     display: flex;
     justify-content: flex-end;
+    margin: 50px 0px;
   `;
 
   const ChangeModeDiv = styled.div`
@@ -28,13 +31,40 @@ function Social() {
     border-radius: 40px;
     display: flex;
     justify-content: flex-end;
+    background: #34393c;
+    position: relative;
+  `;
+
+  const BallIcon = styled.div`
+    width: 50px;
+    height: 40px;
+    position: relative;
+    bottom: 1px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(${ball});
+    background-size: 30px 30px;
+  `;
+
+  const RectangleIcon = styled.div`
+    position: absolute;
+    top: -1px;
+    width: 50px;
+    height: 40px;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(${rectangle});
+    background-size: 32px 32px;
   `;
 
   const ChangeModeButton = styled.div`
     width: 50px;
-    border: 1px solid black;
+    cursor: pointer;
     border-radius: 40px;
     z-index: 1;
+    background: #f5f5f5;
+    border: 1px solid black;
   `;
 
   const SortWrapper = styled.div`
@@ -42,6 +72,7 @@ function Social() {
     border: 1px solid black;
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 50px;
   `;
 
   const SortDiv = styled.div`
@@ -130,6 +161,8 @@ function Social() {
       <CenterWrapper>
         <ChangeModeWrapper>
           <ChangeModeDiv>
+            <BallIcon></BallIcon>
+            <RectangleIcon></RectangleIcon>
             <ChangeModeButton></ChangeModeButton>
           </ChangeModeDiv>
         </ChangeModeWrapper>
