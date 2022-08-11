@@ -207,13 +207,16 @@ const PageLinkProfileIcon = styled(PageLinkIcon)`
 const PageLinkSocialIcon = styled(PageLinkIcon)`
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 34px 34px;
+
+  background-size: 30px 30px;
   background-image: url(${social});
 
   @media screen and (max-width: 1279px) {
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 34px 34px;
+    width: 34px;
+    height: 34px;
+    background-size: 25px 25px;
     background-image: url(${socialMobile});
   }
 `;
