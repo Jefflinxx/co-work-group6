@@ -9,6 +9,7 @@ import LogoPic from './logo.png'
 import Popup from 'reactjs-popup'
 
 import api from '../../utils/api'
+import Member from '../Member/Member'
 import getJwtToken from '../../utils/getJwtToken'
 import fb from '../../utils/fb'
 
@@ -18,9 +19,23 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
+
+  margin: 0 auto;
+  max-width: 1160px;
+`
+const MemberWrapper = styled.div`
+  margin: 0 auto;
+  max-width: 1160px;
 `
 const Divide = styled.div`
   display: flex;
+  justify-content: space-between;
+`
+const MemberDivide = styled(Divide)`
+  margin: 0 auto;
+  max-width: 1160px;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 `
 const Title = styled.div`
@@ -50,6 +65,7 @@ const HotImageList = styled.img`
   width: calc(33% - 12px);
   aspect-ratio: 0.6/1;
   background-image: url(${main});
+  background-size: cover;
 `
 const SubTitle = styled(Title)`
   font-size: 24px;
@@ -73,10 +89,6 @@ const SubTitle = styled(Title)`
     height: 1px;
     background-color: #3f3a3a;
   }
-`
-const SubTitleYes = styled(Title)`
-  font-size: 16px;
-  margin-top: 40px;
 `
 const Btn = styled.button`
   width: 250px;
@@ -108,6 +120,7 @@ const BtnMember = styled(Btn)`
   font-weight: bold;
   background-image: none;
   padding-left: 16px;
+  transition: all 0.5s;
   &:hover {
     background-color: #8b572a;
     color: white;
@@ -115,28 +128,31 @@ const BtnMember = styled(Btn)`
   }
 `
 const CloseBtn = styled.button`
+  position: absolute;
+  top: 0;
+  right: -30px;
+
   cursor: pointer;
   border: 1px solid black;
   background-color: white;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-
+  width: 25px;
+  height: 25px;
+  transition: all 0.5s;
   &:hover {
     background-color: black;
     color: white;
   }
 `
-const CheckInBtn = styled(Btn)`
-  cursor: not-allowed;
-  ${'' /* background-image: url(${fbprofile.picture}); */}
-`
 const CheckOutBtn = styled.div`
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
   &:hover {
     text-decoration: underline;
   }
+`
+const MemberText = styled.div`
+  font-size: 20px;
 `
 const BackOver = styled.div`
   ${'' /* display: none; */}
@@ -154,11 +170,13 @@ const Modal = styled.div`
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  top: 10px;
+  top: 10vh;
   z-index: 11;
   min-height: 100vh;
 `
 const LoginForm = styled.div`
+  position: relative;
+
   background-color: white;
   padding: 30px;
   text-align: left;
@@ -204,6 +222,12 @@ const BecomeMember = styled(BtnMember)`
   margin: 0 auto;
   margin-top: 24px;
 `
+const SuccessLogin = styled(BecomeMember)``
+const SuccessText = styled.p`
+  font-size: 28px;
+  text-align: center;
+  margin-top: 20px;
+`
 const NotMemberText = styled.div`
   font-size: 12px;
   margin-top: 12px;
@@ -212,18 +236,16 @@ const NotMemberText = styled.div`
     opacity: 40%;
   }
 `
-const Reminder = styled.span`
-  color: red;
-  font-size: 12px;
-  margin-left: 12px;
-`
+
 function Profile() {
   const [fbprofile, setfbProfile] = useState()
-  const [reminder, setReminder] = useState(false)
-  const [isRegister, setIsRegister] = useState(false)
+  const [registerToken, setregisterToken] = useState(false)
+  const [checkinToken, setcheckinToken] = useState(false)
   const accountRef = useRef()
   const passwordRef = useRef()
   const emailRef = useRef()
+  const checkinAccount = useRef()
+  const checkinPassword = useRef()
 
   let jwtToken = window.localStorage.getItem('jwtToken')
   async function getProfile() {
@@ -236,75 +258,163 @@ function Profile() {
       }
     }
     window.localStorage.setItem('jwtToken', jwtToken)
-
     const { data } = await api.getProfile(jwtToken)
     setfbProfile(data)
   }
 
-  const register = async () => {
-    if (
-      !accountRef.current.value ||
-      !passwordRef.current.value ||
-      !emailRef.current.value
-    ) {
-      alert('表格不可為空')
-    } else {
-      let registerData = {
-        name: accountRef.current.value,
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
+  const registerProcess = async () => {
+    const register = async () => {
+      if (
+        !accountRef.current.value ||
+        !passwordRef.current.value ||
+        !emailRef.current.value
+      ) {
+        alert('表格不可為空')
+      } else {
+        let registerData = {
+          name: accountRef.current.value,
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+        }
+        console.log(registerData)
+        const response = await fetch(
+          `https://hazlin.work/api/1.0/user/signup`,
+          {
+            body: JSON.stringify(registerData),
+            headers: new Headers({
+              'Content-Type': 'application/json',
+            }),
+            method: 'POST',
+          },
+        )
+        if (response.status === 200) {
+          alert('註冊成功')
+          accountRef.current.value = ''
+          passwordRef.current.value = ''
+          emailRef.current.value = ''
+          // setIsRegister(true)
+        } else if (response.status === 403) {
+          alert('email重複註冊')
+        }
+        return await response.json()
       }
-      console.log(registerData)
-      const response = await fetch(`https://hazlin.work/api/1.0/user/signup`, {
-        body: JSON.stringify(registerData),
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-        method: 'POST',
-      })
-      console.log(await response.json())
-
-      if (response.status === 200) {
-        let registerCheckedData = response.json()
-        let checkdData = registerCheckedData.data
-        alert('註冊成功')
-        setIsRegister(true)
-      } else if (response.status === 403) {
-        alert('email重複註冊')
+    }
+    async function setUserInfo() {
+      let resJSON = await register()
+      // console.log(resJSON)
+      let resUserInfo = await resJSON.data
+      let registerName = await resUserInfo.user.name
+      let resUserToken = await resUserInfo.access_token
+      let registerEmail = await resUserInfo.user.email
+      let UserInfo = {
+        name: registerName,
+        token: resUserToken,
+        email: registerEmail,
       }
-      return await response.json()
+      window.localStorage.setItem('registerToken', JSON.stringify(UserInfo))
+    }
+    setUserInfo()
+    if (window.localStorage.getItem('registerToken') !== []) {
+      setregisterToken(true)
     }
   }
 
-  console.log(reminder)
-  const url = 'https://hazlin.work/api/1.0/order/10279'
-
-  const checkIn = async () => {
-    try {
-      let res = await fetch('https://hazlin.work/api/1.0/order/10279')
-      let userInfo = await res.json()
-      let userDetail = userInfo.data
-      console.log(userDetail)
-    } catch (err) {
-      console.log(`Error:${err}`)
+  const checkInProcess = () => {
+    const checkIn = async () => {
+      if (!checkinAccount.current.value || !checkinPassword.current.value) {
+        alert('表格不能為空')
+      } else {
+        let checkinData = {
+          provider: 'native',
+          email: checkinAccount.current.value,
+          password: checkinPassword.current.value,
+        }
+        const response = await fetch(
+          'https://hazlin.work/api/1.0/user/signin',
+          {
+            body: JSON.stringify(checkinData),
+            headers: new Headers({
+              'Content-Type': 'application/json',
+            }),
+            method: 'POST',
+          },
+        )
+        if (response.status === 200) {
+          alert('成功登入')
+          // checkinAccount.current.value = ''
+          // checkinPassword.current.value = ''
+        } else if (response.status === 403) {
+          alert('Email或帳號有誤')
+        }
+        return await response.json()
+      }
+    }
+    async function setUserInfo() {
+      let resJSON = await checkIn()
+      let resCheckInfo = await resJSON.data
+      let resCheckName = await resCheckInfo.user.name
+      let resCheckEmail = await resCheckInfo.user.email
+      let resCheckToken = await resCheckInfo.access_token
+      let setcheckInInfo = {
+        token: resCheckToken,
+        name: resCheckName,
+        email: resCheckEmail,
+      }
+      window.localStorage.setItem(
+        'checkInToken',
+        JSON.stringify(setcheckInInfo),
+      )
+    }
+    setUserInfo()
+    if (window.localStorage.getItem('checkInToken') !== []) {
+      setcheckinToken(true)
     }
   }
+
+  const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
+  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
+  console.log(LoginName)
+  const [LoginNameInfo, setLoginNameInfo] = useState(LoginName)
+  useEffect(() => {
+    if (LoginName !== []) {
+      setLoginNameInfo(LoginName)
+      setcheckinToken(true)
+    }
+  }, [])
+
+  function directToMember() {
+    let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
+    let registernData = {
+      provider: 'native',
+      name: directInfo.name,
+      email: directInfo.email,
+      password: directInfo.name,
+      token: directInfo.token,
+    }
+    window.localStorage.removeItem('registerToken')
+    window.localStorage.setItem('checkInToken', JSON.stringify(registernData))
+
+    setcheckinToken(true)
+  }
+
   return (
-    <Wrapper>
-      {!fbprofile && (
-        <>
-          <Title>加入會員，引領潮流</Title>
-          <MainLogin>
-            <HotImage>
-              <HotImageList />
-              <HotImageList />
-              <HotImageList />
-            </HotImage>
-            <SubTitle>用以下帳號繼續</SubTitle>
-            <Btn onClick={getProfile}>使用Facebook登入</Btn>
-            <SubTitle>或用 超會搭 帳號</SubTitle>
-            <Divide>
-              {!isRegister && (
+    <>
+      <Wrapper>
+        {/* {!fbprofile   */}
+
+        {!checkinToken && (
+          <>
+            <Title>加入會員，引領潮流</Title>
+            <MainLogin>
+              <HotImage>
+                <HotImageList />
+                <HotImageList />
+                <HotImageList />
+              </HotImage>
+              <SubTitle>用以下帳號繼續</SubTitle>
+              <Btn onClick={getProfile}>使用Facebook登入</Btn>
+              <SubTitle>或用 超會搭 帳號</SubTitle>
+              <Divide>
                 <Popup trigger={<BtnMember>註冊</BtnMember>} modal>
                   {(close) => (
                     <BackOver>
@@ -331,73 +441,112 @@ function Profile() {
                             ref={passwordRef}
                           ></PasswordInput>
                           <AccountLabel type="label">Email</AccountLabel>
-                          {/* {reminder && <Reminder>Email重複註冊</Reminder>} */}
                           <EmailInput type="text" ref={emailRef}></EmailInput>
                           <Text>
                             按下註冊鈕的同時，表示您已詳閱我們的資料使用政策與使用條款
                           </Text>
-                          <BecomeMember onClick={register}>註冊</BecomeMember>
+                          <BecomeMember onClick={registerProcess}>
+                            註冊
+                          </BecomeMember>
+                          {registerToken && (
+                            <SuccessLogin onClick={directToMember}>
+                              直接進入會員頁面
+                            </SuccessLogin>
+                          )}
                         </LoginForm>
                       </Modal>
                     </BackOver>
                   )}
                 </Popup>
-              )}
+                <Popup trigger={<BtnMember>登入</BtnMember>} modal>
+                  {(close) => (
+                    <BackOver>
+                      <Modal>
+                        <LoginForm>
+                          <Divide>
+                            <Logo />
+                            <CloseBtn
+                              onClick={() => {
+                                close()
+                              }}
+                            >
+                              x
+                            </CloseBtn>
+                          </Divide>
+                          <AccountLabel type="label">超會搭Email</AccountLabel>
+                          <AccountInput
+                            type="text"
+                            ref={checkinAccount}
+                          ></AccountInput>
+                          <AccountLabel type="label">密碼</AccountLabel>
+                          <PasswordInput
+                            type="text"
+                            ref={checkinPassword}
+                          ></PasswordInput>
+                          <BecomeMember onClick={checkInProcess}>
+                            登入
+                          </BecomeMember>
+                          <Divide>
+                            <NotMemberText>
+                              還不是會員嗎？
+                              <span onClick>立刻註冊新帳號</span>
+                            </NotMemberText>
+                          </Divide>
+                        </LoginForm>
+                      </Modal>
+                    </BackOver>
+                  )}
+                </Popup>
+              </Divide>
+            </MainLogin>
+          </>
+        )}
+      </Wrapper>
 
-              <Popup trigger={<BtnMember>登入</BtnMember>} modal>
-                {(close) => (
-                  <BackOver>
-                    <Modal>
-                      <LoginForm>
-                        <Divide>
-                          <Logo />
-                          <CloseBtn
-                            onClick={() => {
-                              close()
-                            }}
-                          >
-                            x
-                          </CloseBtn>
-                        </Divide>
-                        <AccountLabel type="label">超會搭Email</AccountLabel>
-                        <AccountInput type="text"></AccountInput>
-                        <AccountLabel type="label">密碼</AccountLabel>
-                        <PasswordInput type="text"></PasswordInput>
-                        <BecomeMember onClick={checkIn}>登入</BecomeMember>
-                        <Divide>
-                          <NotMemberText>
-                            還不是會員嗎？<span>立刻註冊新帳號</span>
-                          </NotMemberText>
-                        </Divide>
-                      </LoginForm>
-                    </Modal>
-                  </BackOver>
-                )}
-              </Popup>
-            </Divide>
-          </MainLogin>
-        </>
-      )}
       {fbprofile && (
         <>
-          <Title>歡迎{fbprofile.name}邁向潮流教主</Title>
-          <MainLogin>
-            <HotImage>
-              <HotImageList />
-              <HotImageList />
-              <HotImageList />
-            </HotImage>
-            <SubTitleYes>已使用Facebook作為帳號</SubTitleYes>
-            <CheckInBtn>已登入</CheckInBtn>
-            <CheckOutBtn
-              onClick={() => window.localStorage.removeItem('jwtToken')}
-            >
-              登出
-            </CheckOutBtn>
-          </MainLogin>
+          <MemberWrapper>
+            <MemberDivide>
+              <MemberText>
+                歡迎 {jwtToken ? fbprofile.name : null} 教主回歸
+              </MemberText>
+              <CheckOutBtn
+                onClick={() => {
+                  window.localStorage.removeItem('jwtToken')
+                  alert('成功登出')
+                  setfbProfile()
+                }}
+              >
+                登出
+              </CheckOutBtn>
+            </MemberDivide>
+          </MemberWrapper>
+          <Member />
         </>
       )}
-    </Wrapper>
+
+      {checkinToken && (
+        <>
+          <MemberWrapper>
+            <MemberDivide>
+              <MemberText>
+                歡迎 {LoginNameInfo ? LoginNameInfo.name : null} 教主回歸
+              </MemberText>
+              <CheckOutBtn
+                onClick={() => {
+                  window.localStorage.removeItem('checkInToken')
+                  alert('成功登出')
+                  setcheckinToken(false)
+                }}
+              >
+                登出
+              </CheckOutBtn>
+            </MemberDivide>
+          </MemberWrapper>
+          <Member />
+        </>
+      )}
+    </>
   )
 }
 

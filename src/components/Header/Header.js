@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
+import { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import styled from 'styled-components'
 
-import logo from './logo.png';
-import search from './search.png';
-import cart from './cart.png';
-import cartMobile from './cart-mobile.png';
-import profile from './profile.png';
-import profileMobile from './profile-mobile.png';
-import CartContext from '../../contexts/CartContext';
+import logo from './logo.png'
+import search from './search.png'
+import cart from './cart.png'
+import cartMobile from './cart-mobile.png'
+import profile from './profile.png'
+import profileMobile from './profile-mobile.png'
+import CartContext from '../../contexts/CartContext'
 
 const Wrapper = styled.div`
   position: fixed;
@@ -30,7 +30,7 @@ const Wrapper = styled.div`
     border: none;
     justify-content: center;
   }
-`;
+`
 
 const Logo = styled(Link)`
   width: 258px;
@@ -42,7 +42,7 @@ const Logo = styled(Link)`
     width: 129px;
     height: 24px;
   }
-`;
+`
 
 const CategoryLinks = styled.div`
   margin: 16px 0 0 57px;
@@ -57,7 +57,7 @@ const CategoryLinks = styled.div`
     display: flex;
     background-color: #313538;
   }
-`;
+`
 
 const CategoryLink = styled(Link)`
   font-size: 20px;
@@ -96,7 +96,7 @@ const CategoryLink = styled(Link)`
       color: #828282;
     }
   }
-`;
+`
 
 const SearchInput = styled.input`
   height: 40px;
@@ -130,7 +130,7 @@ const SearchInput = styled.input`
       border: solid 1px #979797;
     }
   }
-`;
+`
 
 const PageLinks = styled.div`
   margin-left: 42px;
@@ -145,7 +145,7 @@ const PageLinks = styled.div`
     bottom: 0;
     background-color: #313538;
   }
-`;
+`
 
 const PageLink = styled(Link)`
   @media screen and (max-width: 1279px) {
@@ -176,7 +176,7 @@ const PageLink = styled(Link)`
       background-color: #828282;
     }
   }
-`;
+`
 
 const PageLinkIcon = styled.div`
   width: 44px;
@@ -184,7 +184,7 @@ const PageLinkIcon = styled.div`
   cursor: pointer;
   background-size: contain;
   position: relative;
-`;
+`
 
 const PageLinkCartIcon = styled(PageLinkIcon)`
   background-image: url(${cart});
@@ -192,7 +192,7 @@ const PageLinkCartIcon = styled(PageLinkIcon)`
   @media screen and (max-width: 1279px) {
     background-image: url(${cartMobile});
   }
-`;
+`
 
 const PageLinkProfileIcon = styled(PageLinkIcon)`
   background-image: url(${profile});
@@ -200,7 +200,7 @@ const PageLinkProfileIcon = styled(PageLinkIcon)`
   @media screen and (max-width: 1279px) {
     background-image: url(${profileMobile});
   }
-`;
+`
 
 const PageLinkIconNumber = styled.div`
   position: absolute;
@@ -213,7 +213,7 @@ const PageLinkIconNumber = styled.div`
   border-radius: 50%;
   text-align: center;
   line-height: 24px;
-`;
+`
 
 const PageLinkText = styled.div`
   display: none;
@@ -222,7 +222,7 @@ const PageLinkText = styled.div`
     display: block;
     color: white;
   }
-`;
+`
 
 const categories = [
   {
@@ -237,18 +237,19 @@ const categories = [
     name: 'accessories',
     displayText: '配件',
   },
-];
+]
 
 function Header() {
-  const [inputValue, setInputValue] = useState('');
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const category = searchParams.get('category');
-  const { getItems } = useContext(CartContext);
+  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
+  const [inputValue, setInputValue] = useState('')
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get('category')
+  const { getItems } = useContext(CartContext)
 
   useEffect(() => {
-    if (category) setInputValue('');
-  }, [category]);
+    if (category) setInputValue('')
+  }, [category])
 
   return (
     <Wrapper>
@@ -267,7 +268,7 @@ function Header() {
       <SearchInput
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            navigate(`/?keyword=${inputValue}`);
+            navigate(`/?keyword=${inputValue}`)
           }
         }}
         onChange={(e) => setInputValue(e.target.value)}
@@ -282,11 +283,11 @@ function Header() {
         </PageLink>
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
-          <PageLinkText>會員</PageLinkText>
+          <PageLinkText>{LoginName ? LoginName.name : '會員'}</PageLinkText>
         </PageLink>
       </PageLinks>
     </Wrapper>
-  );
+  )
 }
 
-export default Header;
+export default Header
