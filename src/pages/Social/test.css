@@ -4,8 +4,10 @@
   position: relative;
   justify-content: flex-end;
   z-index: 1;
-  color: rgb(191, 196, 200);
+  color: rgba(255, 255, 255, 0.697);
   width: 40px;
   height: 40px;
   align-items: center;
+  background: rgba(0, 0, 0, 0.428);
+  flex-direction: row;
 }

@@ -287,8 +287,10 @@ const PostIconWrapper = styled.div`
   height: 50px;
   display: flex;
   position: relative;
+  background: #34393c;
   @media screen and (max-width: 412px) {
     width: 100%;
+    margin-bottom: 10px;
   }
 `;
 
@@ -370,7 +372,7 @@ const ActivePost = styled.div`
   z-index: 101;
   justify-content: center;
   align-items: center;
-  background: grey;
+
   @media screen and (max-width: 412px) {
     display: none;
   }
@@ -381,11 +383,27 @@ const ActiveUserDiv = styled.div`
   top: ${(props) => props};
   top: 0px;
   width: 600px;
-  height: 90px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
   @media screen and (max-width: 600px) {
     width: 100%;
     height: auto;
   }
+`;
+
+const ActiveUserImage = styled.img`
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+
+  background: #d9d9d9;
+`;
+
+const ActiveUserText = styled.p`
+  margin-left: 16px;
+  color: #d9d9d9;
 `;
 
 const ActivePostImage = styled.img`
@@ -397,6 +415,206 @@ const ActivePostImage = styled.img`
   @media screen and (max-width: 600px) {
     width: 100%;
     height: auto;
+  }
+`;
+
+const ActivePostIconWrapper = styled.div`
+  width: 600px;
+  height: 70px;
+  display: flex;
+  position: relative;
+  background: #34393c;
+  @media screen and (max-width: 412px) {
+    width: 100%;
+  }
+`;
+
+const ActivePostHeartIcon = styled.div`
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(${heart});
+  background-size: 40px 34px;
+  margin-left: 0px;
+  @media screen and (max-width: 412px) {
+    margin-left: 10px;
+  }
+`;
+
+const ActivePostIconNumber = styled.div`
+  position: absolute;
+  top: 30px;
+  left: 56px;
+  font-size: 18px;
+  color: #f5f5f5f5;
+  text-align: center;
+  @media screen and (max-width: 412px) {
+    left: 54px;
+  }
+`;
+
+const ActivePostFollowIcon = styled.div`
+  width: 70px;
+  height: 70px;
+  margin-left: 386px;
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(${follow});
+  background-size: 36px 32px;
+  @media screen and (max-width: 412px) {
+    margin-left: 238px;
+  }
+  @media screen and (max-width: 375px) {
+    margin-left: 190px;
+  }
+`;
+
+const ActivePostSaveIcon = styled.div`
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(${save});
+  background-size: 34px 30px;
+`;
+
+const TagDiv = styled.div`
+  position: absolute;
+  bottom: 122px;
+  width: 600px;
+  height: auto;
+`;
+
+const TagNameDiv = styled.div`
+  margin: 10px;
+  margin-bottom: 20px;
+  width: 580px;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap-reverse;
+`;
+
+const TagName = styled.div`
+  padding: 2px 20px;
+  margin: 4px;
+  height: auto;
+  background: rgba(255, 255, 255, 0.697);
+  color: #34393c;
+`;
+
+const ProductNameDiv = styled.div`
+  margin: 10px;
+  width: 580px;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const ProductName = styled.div`
+  padding: 10px 40px;
+  margin: 4px;
+  height: auto;
+  background: rgba(0, 0, 0, 0.428);
+  color: #f5f5f5;
+`;
+
+const MobileTagDiv = styled.div`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    width: 100vw;
+    height: auto;
+  }
+`;
+
+const MobileTagNameDiv = styled.div`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    margin: 10px;
+    margin-bottom: 20px;
+    width: 90%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap-reverse;
+  }
+`;
+
+const MobileTagName = styled.div`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    padding: 2px 20px;
+    margin: 4px;
+    height: auto;
+    background: rgba(255, 255, 255, 0.697);
+    color: #34393c;
+  }
+`;
+
+const MobileProductNameDiv = styled.div`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    margin: 10px;
+    width: 90%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
+
+const MobileProductName = styled.div`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    padding: 10px 40px;
+    margin: 4px;
+    height: auto;
+    background: rgba(0, 0, 0, 0.428);
+    color: #f5f5f5;
+  }
+`;
+
+const MobileUserDiv = styled.div`
+  display: none;
+  position: relative;
+  top: ${(props) => props};
+  top: 0px;
+  width: 600px;
+  height: 80px;
+
+  align-items: center;
+
+  @media screen and (max-width: 412px) {
+    display: flex;
+    width: 100%;
+    height: auto;
+  }
+`;
+
+const MobileUserImage = styled.img`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 10px 0px 10px 4px;
+    background: #d9d9d9;
+  }
+`;
+
+const MobileUserText = styled.p`
+  display: none;
+  @media screen and (max-width: 412px) {
+    display: block;
+    margin-left: 16px;
+    color: #d9d9d9;
   }
 `;
 
@@ -453,6 +671,12 @@ function Social() {
             return (
               <>
                 <Post>
+                  {/* 手機版 */}
+                  <MobileUserDiv>
+                    <MobileUserImage />
+                    <MobileUserText>{"時尚教主"}</MobileUserText>
+                  </MobileUserDiv>
+
                   <PostImage
                     src={imagetest}
                     onClick={() => {
@@ -462,6 +686,22 @@ function Social() {
                       }
                     }}
                   />
+                  {/* 收機版 */}
+                  <MobileTagDiv>
+                    <MobileProductNameDiv>
+                      {[1].map(() => (
+                        <MobileProductName>
+                          {"超酷牛仔西裝外套"}
+                        </MobileProductName>
+                      ))}
+                    </MobileProductNameDiv>
+                    <MobileTagNameDiv>
+                      {[1, 2, 3].map(() => (
+                        <MobileTagName>{"好看"}</MobileTagName>
+                      ))}
+                    </MobileTagNameDiv>
+                  </MobileTagDiv>
+
                   <PostIconWrapper>
                     <PostHeartIcon></PostHeartIcon>
                     <PostIconNumber>1234</PostIconNumber>
@@ -478,7 +718,10 @@ function Social() {
                   }}
                   isActive={isActive}
                 >
-                  <ActiveUserDiv></ActiveUserDiv>
+                  <ActiveUserDiv>
+                    <ActiveUserImage />
+                    <ActiveUserText>{"時尚教主"}</ActiveUserText>
+                  </ActiveUserDiv>
                   <ActivePostImage
                     src={imagetest}
                     onClick={(e) => {
@@ -486,6 +729,24 @@ function Social() {
                       console.log("no cancel");
                     }}
                   />
+                  <ActivePostIconWrapper>
+                    <ActivePostHeartIcon></ActivePostHeartIcon>
+                    <ActivePostIconNumber>1234</ActivePostIconNumber>
+                    <ActivePostFollowIcon></ActivePostFollowIcon>
+                    <ActivePostSaveIcon></ActivePostSaveIcon>
+                  </ActivePostIconWrapper>
+                  <TagDiv>
+                    <ProductNameDiv>
+                      {[1, 2].map(() => (
+                        <ProductName>{"超酷牛仔西裝外套"}</ProductName>
+                      ))}
+                    </ProductNameDiv>
+                    <TagNameDiv>
+                      {[1, 2, 3, 4, 5].map(() => (
+                        <TagName>{"好看"}</TagName>
+                      ))}
+                    </TagNameDiv>
+                  </TagDiv>
                 </ActivePost>
               </>
             );
