@@ -4,4 +4,8 @@
   position: relative;
   justify-content: flex-end;
   z-index: 1;
+  color: rgb(191, 196, 200);
+  width: 40px;
+  height: 40px;
+  align-items: center;
 }

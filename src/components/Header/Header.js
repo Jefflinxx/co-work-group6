@@ -284,6 +284,7 @@ function Header() {
         ))}
       </CategoryLinks>
       <SearchInput
+        placeholder="搜尋商品"
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             navigate(`/?keyword=${inputValue}`);
