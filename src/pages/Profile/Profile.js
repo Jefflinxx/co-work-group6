@@ -7,9 +7,9 @@ import Mail from './Mail.png'
 import Password from './Password.png'
 import LogoPic from './logo.png'
 import Popup from 'reactjs-popup'
+import Member from '../Member/Member'
 
 import api from '../../utils/api'
-import Member from '../Member/Member'
 import getJwtToken from '../../utils/getJwtToken'
 import fb from '../../utils/fb'
 
@@ -24,6 +24,7 @@ const Wrapper = styled.div`
   max-width: 1160px;
 `
 const MemberWrapper = styled.div`
+  padding: 60px 20px;
   margin: 0 auto;
   max-width: 1160px;
 `
@@ -223,11 +224,6 @@ const BecomeMember = styled(BtnMember)`
   margin-top: 24px;
 `
 const SuccessLogin = styled(BecomeMember)``
-const SuccessText = styled.p`
-  font-size: 28px;
-  text-align: center;
-  margin-top: 20px;
-`
 const NotMemberText = styled.div`
   font-size: 12px;
   margin-top: 12px;
@@ -318,7 +314,6 @@ function Profile() {
       setregisterToken(true)
     }
   }
-
   const checkInProcess = () => {
     const checkIn = async () => {
       if (!checkinAccount.current.value || !checkinPassword.current.value) {
@@ -371,13 +366,14 @@ function Profile() {
     }
   }
 
+  console.log(checkinToken)
   const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
   const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
-  console.log(LoginName)
-  const [LoginNameInfo, setLoginNameInfo] = useState(LoginName)
+  // console.log(LoginName)
+  // const [LoginNameInfo, setLoginNameInfo] = useState(LoginName)
   useEffect(() => {
-    if (LoginName !== []) {
-      setLoginNameInfo(LoginName)
+    if (LoginName !== null) {
+      // setLoginNameInfo(LoginNameInfo)
       setcheckinToken(true)
     }
   }, [])
@@ -399,10 +395,8 @@ function Profile() {
 
   return (
     <>
-      <Wrapper>
-        {/* {!fbprofile   */}
-
-        {!checkinToken && (
+      {!checkinToken && (
+        <Wrapper>
           <>
             <Title>加入會員，引領潮流</Title>
             <MainLogin>
@@ -500,9 +494,8 @@ function Profile() {
               </Divide>
             </MainLogin>
           </>
-        )}
-      </Wrapper>
-
+        </Wrapper>
+      )}
       {fbprofile && (
         <>
           <MemberWrapper>
@@ -524,19 +517,19 @@ function Profile() {
           <Member />
         </>
       )}
-
       {checkinToken && (
         <>
           <MemberWrapper>
             <MemberDivide>
               <MemberText>
-                歡迎 {LoginNameInfo ? LoginNameInfo.name : null} 教主回歸
+                歡迎 {LoginName ? LoginName.name : null} 教主回歸
               </MemberText>
               <CheckOutBtn
                 onClick={() => {
                   window.localStorage.removeItem('checkInToken')
                   alert('成功登出')
                   setcheckinToken(false)
+                  setregisterToken(false)
                 }}
               >
                 登出
