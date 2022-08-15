@@ -39,6 +39,11 @@ const MemberDivide = styled(Divide)`
   align-items: center;
   justify-content: space-between;
 `
+const PhotoDivide = styled(Divide)`
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 24px;
+`
 const Title = styled.div`
   margin-bottom: 32px;
   font-size: 36px;
@@ -232,16 +237,37 @@ const NotMemberText = styled.div`
     opacity: 40%;
   }
 `
+const Tag = styled.input`
+  font-size: 24px;
+  margin: 20px 45px;
+`
+const UploadPic = styled.div`
+  margin-top: 20px;
+  width: 180px;
+  height: 180px;
+  background-color: #d9d9d9;
+  border-radius: 50%;
+`
+const UploadPhoto = styled.img`
+  width: 180px;
+  aspect-ratio: 1/1;
+  background-color: #d9d9d9;
+  border-radius: 50%;
+  object-fit: cover;
+`
 
 function Profile() {
   const [fbprofile, setfbProfile] = useState()
   const [registerToken, setregisterToken] = useState(false)
   const [checkinToken, setcheckinToken] = useState(false)
+  const [images, setImages] = useState([])
+  const [imageURLs, setImageURLs] = useState([])
   const accountRef = useRef()
   const passwordRef = useRef()
   const emailRef = useRef()
   const checkinAccount = useRef()
   const checkinPassword = useRef()
+  // const photoRef = useRef()
 
   let jwtToken = window.localStorage.getItem('jwtToken')
   async function getProfile() {
@@ -263,14 +289,17 @@ function Profile() {
       if (
         !accountRef.current.value ||
         !passwordRef.current.value ||
-        !emailRef.current.value
+        !emailRef.current.value ||
+        images.length < 1
       ) {
         alert('表格不可為空')
+        setregisterToken(false)
       } else {
         let registerData = {
           name: accountRef.current.value,
           email: emailRef.current.value,
           password: passwordRef.current.value,
+          // photo:
         }
         console.log(registerData)
         const response = await fetch(
@@ -288,6 +317,7 @@ function Profile() {
           accountRef.current.value = ''
           passwordRef.current.value = ''
           emailRef.current.value = ''
+          // photoRef.current.value = ''
           // setIsRegister(true)
         } else if (response.status === 403) {
           alert('email重複註冊')
@@ -297,15 +327,16 @@ function Profile() {
     }
     async function setUserInfo() {
       let resJSON = await register()
-      // console.log(resJSON)
       let resUserInfo = await resJSON.data
       let registerName = await resUserInfo.user.name
       let resUserToken = await resUserInfo.access_token
       let registerEmail = await resUserInfo.user.email
+      let registerPhoto = await resUserInfo.user_picture
       let UserInfo = {
         name: registerName,
         token: resUserToken,
         email: registerEmail,
+        photo: registerPhoto,
       }
       window.localStorage.setItem('registerToken', JSON.stringify(UserInfo))
     }
@@ -366,18 +397,10 @@ function Profile() {
     }
   }
 
-  const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
-  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
-  // console.log(LoginName)
-  // const [LoginNameInfo, setLoginNameInfo] = useState(LoginName)
-  useEffect(() => {
-    if (LoginName !== null) {
-      // setLoginNameInfo(LoginNameInfo)
-      setcheckinToken(true)
-    }
-  }, [])
-
   function directToMember() {
+    if (!registerToken) {
+      alert('尚未有會員資料')
+    }
     let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
     let registernData = {
       provider: 'native',
@@ -390,6 +413,27 @@ function Profile() {
     window.localStorage.setItem('checkInToken', JSON.stringify(registernData))
 
     setcheckinToken(true)
+  }
+
+  // const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
+  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
+  useEffect(() => {
+    if (LoginName !== null) {
+      // setLoginNameInfo(LoginNameInfo)
+      setcheckinToken(true)
+    }
+  }, [LoginName])
+
+  useEffect(() => {
+    if (images.length < 1) return
+    const newImageUrls = []
+    images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)))
+    setImageURLs(newImageUrls)
+  }, [images])
+
+  function getPhotoInfo(e) {
+    setImages([...e.target.files])
+    console.log(e.target.files[0])
   }
 
   return (
@@ -435,6 +479,25 @@ function Profile() {
                           ></PasswordInput>
                           <AccountLabel type="label">Email</AccountLabel>
                           <EmailInput type="text" ref={emailRef}></EmailInput>
+                          <AccountLabel type="label">會員照片</AccountLabel>
+                          <PhotoDivide>
+                            <UploadPic>
+                              {' '}
+                              {imageURLs.map((imageSrc, index) => (
+                                <UploadPhoto
+                                  key={index}
+                                  src={imageSrc}
+                                  alt="uploadImage"
+                                />
+                              ))}
+                            </UploadPic>
+                            <Tag
+                              type="file"
+                              multiple
+                              accept=".png, .jpg, .jpeg"
+                              onChange={getPhotoInfo}
+                            />
+                          </PhotoDivide>
                           <Text>
                             按下註冊鈕的同時，表示您已詳閱我們的資料使用政策與使用條款
                           </Text>
