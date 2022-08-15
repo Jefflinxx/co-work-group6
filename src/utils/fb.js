@@ -2,51 +2,51 @@ const fb = {
   loadScript() {
     return new Promise((resolve) => {
       window.fbAsyncInit = () => {
-        resolve();
-      };
-      (function (d, s, id) {
+        resolve()
+      }
+      ;(function (d, s, id) {
         var js,
-          fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = 'https://connect.facebook.net/zh_TW/sdk.js';
-        fjs.parentNode.insertBefore(js, fjs);
-      })(document, 'script', 'facebook-jssdk');
-    });
+          fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s)
+        js.id = id
+        js.src = 'https://connect.facebook.net/zh_TW/sdk.js'
+        fjs.parentNode.insertBefore(js, fjs)
+      })(document, 'script', 'facebook-jssdk')
+    })
   },
   init() {
     window.FB.init({
-      appId: '700590737403665',
+      appId: '1539199753181520',
       cookie: true,
       xfbml: true,
-      version: 'v10.0',
-    });
+      version: 'v14.0',
+    })
   },
   getLoginStatus() {
     return new Promise((resolve) => {
       window.FB.getLoginStatus((response) => {
-        resolve(response);
-      });
-    });
+        resolve(response)
+      })
+    })
   },
   login() {
     return new Promise((resolve) => {
       window.FB.login(
         (response) => {
-          resolve(response);
+          resolve(response)
         },
-        { scope: 'public_profile,email' }
-      );
-    });
+        { scope: 'public_profile,email' },
+      )
+    })
   },
   logout() {
     return new Promise((resolve) => {
       window.FB.logout(() => {
-        resolve();
-      });
-    });
+        resolve()
+      })
+    })
   },
-};
+}
 
-export default fb;
+export default fb
