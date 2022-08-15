@@ -1,3 +1,4 @@
+
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
@@ -8,15 +9,7 @@ import ThankYou from './pages/ThankYou/ThankYou'
 import Product from './pages/Product/Product'
 import Profile from './pages/Profile/Profile'
 import { initializeApp } from 'firebase/app'
-// import { getAnalytics } from 'firebase/analytics'
-
-const root = ReactDOM.createRoot(document.getElementById('root'))
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import Social from "./pages/Social/Social";
 const firebaseConfig = {
   apiKey: 'AIzaSyDrNAOLc6sjLIPk8PrS5krzEGXRIGPtsug',
   authDomain: 'newstylish-fa92f.firebaseapp.com',
@@ -30,6 +23,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 // const analytics = getAnalytics(app)
 
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <BrowserRouter>
     <Routes>
@@ -39,6 +35,7 @@ root.render(
         <Route path="checkout" element={<Checkout />} />
         <Route path="thankyou" element={<ThankYou />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="social" element={<Social />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
