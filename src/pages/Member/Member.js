@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import main from './main.png'
-import Upload from '../Upload/Upload'
+import UploadPost from '../UploadPost/UploadPost'
 import FollowingList from '../FollowingList/FollowingList'
 
 import styled from 'styled-components'
@@ -91,43 +91,96 @@ const OrderInfo = styled.div`
     margin-bottom: 12px;
   }
 `
-// const buyHistory = [
-//   {
-//     //訂單編號
-//     //購買時間
-//     //總金額
-//     id: '1',
-//     name: '衣服',
-//     price: 123,
-//     color: '白',
-//     size: 'XL',
-//     qty: 10,
-//   },
-// ]
+const OpenOrder = styled.div`
+  width: 150px;
+  border: 1px solid #bc9272;
+  color: #bc9272;
+  font-size: 20px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
 
-// async function fetchOrders() {
-//   try {
-//     const response = await fetch('https://hazlin.work/api/1.0/user/order')
-//     if ((await response.json().length) <= 0) {
-//       console.log('尚無購買任何商品')
-//     }
-//     console.log(await response.json())
-//     return await response.json()
-//   } catch {
-//     console.log((err) => `Error:${err}`)
-//   }
-// }
+  &:hover {
+    background-color: #bc9272;
+    color: white;
+  }
+`
+
+const fakeOrder = {
+  uid: 1,
+  uname: 'Adam',
+  uemail: '123@gmail.com',
+  list: [
+    {
+      oid: 4996,
+      ptitle: '經典修身長筒牛仔褲',
+      time: '2022-08-12 02:25',
+      price: 699,
+      color: '白',
+      size: 'XL',
+      qty: 10,
+      total: 6990,
+    },
+    {
+      oid: 4997,
+      ptitle: '小扇紋質感上衣',
+      time: '2022-08-13 03:10',
+      price: 499,
+      color: '黑',
+      size: 'L',
+      qty: 10,
+      total: 4990,
+    },
+    {
+      oid: 4998,
+      ptitle: '透肌澎澎薄紗襯衫',
+      time: '2022-08-14 06:10',
+      price: 599,
+      color: '黃',
+      size: 'M',
+      qty: 10,
+      total: 5990,
+    },
+  ],
+}
+
 function Member() {
   const [isOpen, setIsOpen] = useState(false)
   const [tabIndex, setTabIndex] = useState(0)
   const [isActive, setIsActive] = useState(false)
+  const [isClick, setIsClick] = useState(false)
+  const [orderIsOpen, setOrderIsopen] = useState(false)
   const [currentPage, setCurrentPage] = useState()
-
-  // const Upload = <div>Upload</div>
 
   function showMore() {
     setIsOpen((prevCheck) => !prevCheck)
     setIsActive((current) => !current)
+  }
+
+  async function fetchOrders() {
+    setIsClick((current) => !current)
+    if (fakeOrder.list.length <= 0) {
+      alert('目前尚無訂單')
+    } else {
+      setOrderIsopen((prevCheck) => !prevCheck)
+    }
+    // let faketoken = JSON.parse(window.localStorage.getItem('checkInToken'))
+    // // console.log(faketoken.token)
+    // faketoken.token =
+    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJZYWhvbyIsImVtYWlsIjoiMzMzMzNAZ21haWwuY29tIiwicGljdHVyZSI6bnVsbCwiaWF0IjoxNjYwMjg4ODQ0fQ.0WnS1d5OiGfIv9MqkKOVpugl-gwPvWPjHVSum2M8kkM'
+    // window.localStorage.setItem('checkInToken', JSON.stringify(faketoken.token))
+
+    console.log(123)
+    // try {
+    //   const response = await fetch('https://hazlin.work/api/1.0/user/orders')
+    //   // if ((await response.json().length) <= 0) {
+    //   //   console.log('尚無購買任何商品')
+    //   // }
+    //   console.log(await response.json())
+    //   return await response.json()
+    // } catch {
+    //   console.log((err) => `Error:${err}`)
+    // }
   }
   return (
     <>
@@ -140,7 +193,6 @@ function Member() {
               onClick={() => {
                 setTabIndex(index)
                 setCurrentPage(index)
-                console.log(index, currentPage)
               }}
             >
               {text}
@@ -148,69 +200,65 @@ function Member() {
           ))}
         </Divide>
         {currentPage === 0 && (
-          <Order>
-            <TextTitle>訂單編號：123</TextTitle>
-            <TextTitle>日期：123</TextTitle>
-            <OrderDivide>
-              <TextTitle>金額：NT 123</TextTitle>
-              <ShowMore
-                onClick={showMore}
-                style={{
-                  backgroundColor: isActive ? '#8B572A' : 'white',
-                  color: isActive ? 'white' : 'black',
-                }}
-              >
-                展開明細
-              </ShowMore>
-            </OrderDivide>
-            {isOpen && (
+          <>
+            <OpenOrder
+              onClick={fetchOrders}
+              style={{
+                backgroundColor: isClick ? '#bc9272' : 'white',
+                color: isClick ? 'white' : '#bc9272',
+              }}
+            >
+              訂單明細
+            </OpenOrder>
+            {orderIsOpen && (
               <>
                 <Order>
+                  <TextTitle>訂單編號：123</TextTitle>
+                  <TextTitle>日期：123</TextTitle>
                   <OrderDivide>
-                    <OrderDivide>
-                      <ProductImage></ProductImage>
-                      <OrderInfo>
-                        <p>前開衩扭結洋裝</p>
-                        <p>顏色｜白</p>
-                        <p>尺寸｜M</p>
-                      </OrderInfo>
-                    </OrderDivide>
-                    <OrderPriceDivide>
-                      <TextTitle>數量</TextTitle>
-                      <TextTitle>1</TextTitle>
-                    </OrderPriceDivide>
-                    <OrderPriceDivide>
-                      <TextTitle>小計</TextTitle>
-                      <TextTitle>NT 799</TextTitle>
-                    </OrderPriceDivide>
-                  </OrderDivide>
-                  <Line></Line>
-                </Order>
-                <Order>
-                  <OrderDivide>
-                    <OrderDivide>
-                      <ProductImage></ProductImage>
-                      <OrderInfo>
-                        <p>前開衩扭結洋裝</p>
-                        <p>顏色｜白</p>
-                        <p>尺寸｜M</p>
-                      </OrderInfo>
-                    </OrderDivide>
-                    <OrderPriceDivide>
-                      <TextTitle>數量</TextTitle>
-                      <TextTitle>1</TextTitle>
-                    </OrderPriceDivide>
-                    <OrderPriceDivide>
-                      <TextTitle>小計</TextTitle>
-                      <TextTitle>NT 799</TextTitle>
-                    </OrderPriceDivide>
+                    <TextTitle>金額：NT 123</TextTitle>
+                    <ShowMore
+                      onClick={showMore}
+                      style={{
+                        backgroundColor: isActive ? '#8B572A' : 'white',
+                        color: isActive ? 'white' : 'black',
+                      }}
+                    >
+                      展開明細
+                    </ShowMore>
                   </OrderDivide>
                 </Order>
               </>
             )}
-          </Order>
+            {isOpen &&
+              fakeOrder.list.map((list, index) => {
+                return (
+                  <Order key={index}>
+                    <OrderDivide>
+                      <OrderDivide>
+                        <ProductImage></ProductImage>
+                        <OrderInfo>
+                          <p>{list.ptitle}</p>
+                          <p>顏色｜{list.color}</p>
+                          <p>尺寸｜{list.size}</p>
+                        </OrderInfo>
+                      </OrderDivide>
+                      <OrderPriceDivide>
+                        <TextTitle>數量</TextTitle>
+                        <TextTitle>{list.qty}</TextTitle>
+                      </OrderPriceDivide>
+                      <OrderPriceDivide>
+                        <TextTitle>小計</TextTitle>
+                        <TextTitle>NT {list.qty * list.price}</TextTitle>
+                      </OrderPriceDivide>
+                    </OrderDivide>
+                    <Line></Line>
+                  </Order>
+                )
+              })}
+          </>
         )}
-        {currentPage === 1 && <Upload />}
+        {currentPage === 1 && <UploadPost />}
         {currentPage === 2 && <FollowingList></FollowingList>}
       </Wrapper>
     </>

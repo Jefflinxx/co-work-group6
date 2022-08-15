@@ -366,7 +366,6 @@ function Profile() {
     }
   }
 
-  console.log(checkinToken)
   const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
   const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
   // console.log(LoginName)

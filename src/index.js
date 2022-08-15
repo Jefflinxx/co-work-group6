@@ -8,7 +8,7 @@ import ThankYou from './pages/ThankYou/ThankYou'
 import Product from './pages/Product/Product'
 import Profile from './pages/Profile/Profile'
 import { initializeApp } from 'firebase/app'
-import { getAnalytics } from 'firebase/analytics'
+// import { getAnalytics } from 'firebase/analytics'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
@@ -28,7 +28,7 @@ const firebaseConfig = {
 }
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-const analytics = getAnalytics(app)
+// const analytics = getAnalytics(app)
 
 root.render(
   <BrowserRouter>
