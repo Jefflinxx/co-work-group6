@@ -1,14 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import styled from 'styled-components';
 
-import logo from './logo.png';
-import search from './search.png';
-import cart from './cart.png';
-import cartMobile from './cart-mobile.png';
-import profile from './profile.png';
-import profileMobile from './profile-mobile.png';
-import CartContext from '../../contexts/CartContext';
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import styled from "styled-components";
+
+import logo from "./logo.png";
+import search from "./search.png";
+import cart from "./cart.png";
+import cartMobile from "./cart-mobile.png";
+import profile from "./profile.png";
+import profileMobile from "./profile-mobile.png";
+import social from "./social.png";
+import socialMobile from "./social-mobile.png";
+import CartContext from "../../contexts/CartContext";
 
 const Wrapper = styled.div`
   position: fixed;
@@ -30,7 +33,7 @@ const Wrapper = styled.div`
     border: none;
     justify-content: center;
   }
-`;
+`
 
 const Logo = styled(Link)`
   width: 258px;
@@ -42,7 +45,7 @@ const Logo = styled(Link)`
     width: 129px;
     height: 24px;
   }
-`;
+`
 
 const CategoryLinks = styled.div`
   margin: 16px 0 0 57px;
@@ -57,7 +60,7 @@ const CategoryLinks = styled.div`
     display: flex;
     background-color: #313538;
   }
-`;
+`
 
 const CategoryLink = styled(Link)`
   font-size: 20px;
@@ -66,14 +69,14 @@ const CategoryLink = styled(Link)`
   padding-right: 11px;
   position: relative;
   text-decoration: none;
-  color: ${(props) => (props.$isActive ? '#8b572a' : '#3f3a3a')};
+  color: ${(props) => (props.$isActive ? "#8b572a" : "#3f3a3a")};
 
   @media screen and (max-width: 1279px) {
     font-size: 16px;
     letter-spacing: normal;
     padding: 0;
     text-align: center;
-    color: ${(props) => (props.$isActive ? 'white' : '#828282')};
+    color: ${(props) => (props.$isActive ? "white" : "#828282")};
     line-height: 50px;
     flex-grow: 1;
   }
@@ -87,7 +90,7 @@ const CategoryLink = styled(Link)`
   }
 
   & + &::before {
-    content: '|';
+    content: "|";
     position: absolute;
     left: 0;
     color: #3f3a3a;
@@ -96,7 +99,7 @@ const CategoryLink = styled(Link)`
       color: #828282;
     }
   }
-`;
+`
 
 const SearchInput = styled.input`
   height: 40px;
@@ -130,7 +133,7 @@ const SearchInput = styled.input`
       border: solid 1px #979797;
     }
   }
-`;
+`
 
 const PageLinks = styled.div`
   margin-left: 42px;
@@ -145,7 +148,7 @@ const PageLinks = styled.div`
     bottom: 0;
     background-color: #313538;
   }
-`;
+`
 
 const PageLink = styled(Link)`
   @media screen and (max-width: 1279px) {
@@ -167,7 +170,7 @@ const PageLink = styled(Link)`
 
   & + &::before {
     @media screen and (max-width: 1279px) {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       width: 1px;
@@ -176,7 +179,7 @@ const PageLink = styled(Link)`
       background-color: #828282;
     }
   }
-`;
+`
 
 const PageLinkIcon = styled.div`
   width: 44px;
@@ -184,7 +187,7 @@ const PageLinkIcon = styled.div`
   cursor: pointer;
   background-size: contain;
   position: relative;
-`;
+`
 
 const PageLinkCartIcon = styled(PageLinkIcon)`
   background-image: url(${cart});
@@ -192,13 +195,30 @@ const PageLinkCartIcon = styled(PageLinkIcon)`
   @media screen and (max-width: 1279px) {
     background-image: url(${cartMobile});
   }
-`;
+`
 
 const PageLinkProfileIcon = styled(PageLinkIcon)`
   background-image: url(${profile});
 
   @media screen and (max-width: 1279px) {
     background-image: url(${profileMobile});
+  }
+`
+
+const PageLinkSocialIcon = styled(PageLinkIcon)`
+  background-position: center;
+  background-repeat: no-repeat;
+
+  background-size: 30px 30px;
+  background-image: url(${social});
+
+  @media screen and (max-width: 1279px) {
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 34px;
+    height: 34px;
+    background-size: 25px 25px;
+    background-image: url(${socialMobile});
   }
 `;
 
@@ -213,7 +233,7 @@ const PageLinkIconNumber = styled.div`
   border-radius: 50%;
   text-align: center;
   line-height: 24px;
-`;
+`
 
 const PageLinkText = styled.div`
   display: none;
@@ -222,33 +242,35 @@ const PageLinkText = styled.div`
     display: block;
     color: white;
   }
-`;
+`
 
 const categories = [
   {
-    name: 'women',
-    displayText: '女裝',
+    name: "women",
+    displayText: "女裝",
   },
   {
-    name: 'men',
-    displayText: '男裝',
+    name: "men",
+    displayText: "男裝",
   },
   {
-    name: 'accessories',
-    displayText: '配件',
+    name: "accessories",
+    displayText: "配件",
   },
-];
+]
 
 function Header() {
-  const [inputValue, setInputValue] = useState('');
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const category = searchParams.get('category');
-  const { getItems } = useContext(CartContext);
+
+  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
+  const [inputValue, setInputValue] = useState('')
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get('category')
+  const { getItems } = useContext(CartContext)
 
   useEffect(() => {
-    if (category) setInputValue('');
-  }, [category]);
+    if (category) setInputValue('')
+  }, [category])
 
   return (
     <Wrapper>
@@ -265,8 +287,9 @@ function Header() {
         ))}
       </CategoryLinks>
       <SearchInput
+        placeholder="搜尋商品"
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             navigate(`/?keyword=${inputValue}`);
           }
         }}
@@ -282,11 +305,15 @@ function Header() {
         </PageLink>
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
-          <PageLinkText>會員</PageLinkText>
+          <PageLinkText>{LoginName ? LoginName.name : '會員'}</PageLinkText>
+        </PageLink>
+        <PageLink to="/social">
+          <PageLinkSocialIcon icon={social} />
+          <PageLinkText>社群</PageLinkText>
         </PageLink>
       </PageLinks>
     </Wrapper>
-  );
+  )
 }
 
-export default Header;
+export default Header
