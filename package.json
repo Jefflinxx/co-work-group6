@@ -1,7 +1,6 @@
 {
   "name": "stylish-front-end",
   "version": "0.1.0",
-  
   "private": true,
   "dependencies": {
     "firebase": "^9.9.2",
@@ -10,6 +9,7 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-webcam": "^7.0.1",
     "reactjs-popup": "^2.0.5",
     "styled-components": "^5.3.5",
     "styled-reset": "^4.4.1"

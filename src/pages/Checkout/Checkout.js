@@ -1,12 +1,12 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { useContext, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import styled from 'styled-components'
 
-import CartContext from '../../contexts/CartContext';
-import api from '../../utils/api';
-import getJwtToken from '../../utils/getJwtToken';
-import tappay from '../../utils/tappay';
-import Cart from './Cart';
+import CartContext from '../../contexts/CartContext'
+import api from '../../utils/api'
+import getJwtToken from '../../utils/getJwtToken'
+import tappay from '../../utils/tappay'
+import Cart from './Cart'
 
 const Wrapper = styled.div`
   margin: 0 auto;
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   @media screen and (max-width: 1279px) {
     padding: 20px 24px 236px;
   }
-`;
+`
 
 const GrayBlock = styled.div`
   padding: 22px 30px;
@@ -37,7 +37,7 @@ const GrayBlock = styled.div`
     font-size: 14px;
     line-height: 17px;
   }
-`;
+`
 
 const Label = styled.label`
   color: #3f3a3a;
@@ -46,7 +46,7 @@ const Label = styled.label`
   @media screen and (max-width: 1279px) {
     margin-left: 0;
   }
-`;
+`
 
 const Select = styled.select`
   width: 171px;
@@ -71,14 +71,14 @@ const Select = styled.select`
     margin-top: 10px;
     width: 100%;
   }
-`;
+`
 
 const Note = styled.div`
   line-height: 26px;
   margin-top: 20px;
   font-size: 16px;
   color: #3f3a3a;
-`;
+`
 
 const FormFieldSet = styled.fieldset`
   margin-top: 50px;
@@ -86,7 +86,7 @@ const FormFieldSet = styled.fieldset`
   @media screen and (max-width: 1279px) {
     margin-top: 20px;
   }
-`;
+`
 
 const FormLegend = styled.legend`
   line-height: 19px;
@@ -96,7 +96,7 @@ const FormLegend = styled.legend`
   padding-bottom: 16px;
   border-bottom: 1px solid #3f3a3a;
   width: 100%;
-`;
+`
 
 const FormGroup = styled.div`
   display: flex;
@@ -119,7 +119,7 @@ const FormGroup = styled.div`
       margin-top: 20px;
     }
   }
-`;
+`
 
 const FormLabel = styled.label`
   width: 110px;
@@ -131,7 +131,7 @@ const FormLabel = styled.label`
   @media screen and (max-width: 1279px) {
     width: 100%;
   }
-`;
+`
 
 const FormControl = styled.input`
   width: 574px;
@@ -143,7 +143,7 @@ const FormControl = styled.input`
     margin-top: 10px;
     width: 100%;
   }
-`;
+`
 
 const FormText = styled.div`
   line-height: 19px;
@@ -152,7 +152,7 @@ const FormText = styled.div`
   margin-top: 10px;
   width: 100%;
   text-align: right;
-`;
+`
 
 const FormCheck = styled.div`
   margin-left: 8px;
@@ -171,13 +171,13 @@ const FormCheck = styled.div`
       margin-left: 27px;
     }
   }
-`;
+`
 
 const FormCheckInput = styled.input`
   margin: 0;
   width: 16px;
   height: 16px;
-`;
+`
 
 const FormCheckLabel = styled.label`
   margin-left: 10px;
@@ -186,7 +186,7 @@ const FormCheckLabel = styled.label`
   @media screen and (max-width: 1279px) {
     font-size: 14px;
   }
-`;
+`
 
 const Price = styled.div`
   display: flex;
@@ -197,7 +197,7 @@ const Price = styled.div`
   @media screen and (max-width: 1279px) {
     width: 200px;
   }
-`;
+`
 
 const SubtotalPrice = styled(Price)`
   margin-top: 40px;
@@ -205,7 +205,7 @@ const SubtotalPrice = styled(Price)`
   @media screen and (max-width: 1279px) {
     margin-top: 24px;
   }
-`;
+`
 
 const ShippingPrice = styled(Price)`
   margin-top: 20px;
@@ -217,7 +217,7 @@ const ShippingPrice = styled(Price)`
     padding-bottom: 24px;
     border-bottom: 1px solid #3f3a3a;
   }
-`;
+`
 
 const TotalPrice = styled(Price)`
   margin-top: 20px;
@@ -225,7 +225,7 @@ const TotalPrice = styled(Price)`
   @media screen and (max-width: 1279px) {
     margin-top: 16px;
   }
-`;
+`
 
 const PriceName = styled.div`
   line-height: 19px;
@@ -236,21 +236,21 @@ const PriceName = styled.div`
     line-height: 17px;
     font-size: 14px;
   }
-`;
+`
 
 const Currency = styled.div`
   margin-left: auto;
   line-height: 19px;
   font-size: 16px;
   color: #3f3a3a;
-`;
+`
 
 const PriceValue = styled.div`
   line-height: 36px;
   margin-left: 10px;
   font-size: 30px;
   color: #3f3a3a;
-`;
+`
 
 const CheckoutButton = styled.button`
   width: 240px;
@@ -273,7 +273,7 @@ const CheckoutButton = styled.button`
     font-size: 16px;
     letter-spacing: 3.2px;
   }
-`;
+`
 
 const recipientFormGroups = [
   {
@@ -302,7 +302,7 @@ const recipientFormGroups = [
       },
     ],
   },
-];
+]
 
 function Checkout() {
   const [recipient, setRecipient] = useState({
@@ -311,62 +311,59 @@ function Checkout() {
     phone: '',
     address: '',
     time: '',
-  });
-  const cart = useContext(CartContext);
-  const items = cart.getItems();
-  const navigate = useNavigate();
-  const cardNumberRef = useRef();
-  const cardExpirationDateRef = useRef();
-  const cardCCVRef = useRef();
+  })
+  const cart = useContext(CartContext)
+  const items = cart.getItems()
+  const navigate = useNavigate()
+  const cardNumberRef = useRef()
+  const cardExpirationDateRef = useRef()
+  const cardCCVRef = useRef()
 
   useEffect(() => {
-    tappay.setupSDK();
+    tappay.setupSDK()
     tappay.setupCard(
       cardNumberRef.current,
       cardExpirationDateRef.current,
-      cardCCVRef.current
-    );
-  }, []);
+      cardCCVRef.current,
+    )
+  }, [])
 
-  const subtotal = items.reduce(
-    (prev, item) => prev + item.price * item.qty,
-    0
-  );
+  const subtotal = items.reduce((prev, item) => prev + item.price * item.qty, 0)
 
-  const freight = 30;
+  const freight = 30
 
   async function checkout() {
-    let jwtToken = window.localStorage.getItem('jwtToken');
-
-    if (!jwtToken) {
+    let jwtToken = JSON.parse(window.localStorage.getItem('jwtToken'))
+    let jwtTokenPerson = jwtToken.token
+    if (jwtTokenPerson) {
       try {
-        jwtToken = await getJwtToken();
+        console.log('someone is signed')
       } catch (e) {
-        window.alert(e.message);
-        return;
+        window.alert(e.message)
+        return
       }
     }
-    window.localStorage.setItem('jwtToken', jwtToken);
+    // window.localStorage.setItem('jwtToken', jwtToken)
 
     if (items.length === 0) {
-      window.alert('尚未選購商品');
-      return;
+      window.alert('尚未選購商品')
+      return
     }
 
     if (Object.values(recipient).some((value) => !value)) {
-      window.alert('請填寫完整訂購資料');
-      return;
+      window.alert('請填寫完整訂購資料')
+      return
     }
 
     if (!tappay.canGetPrime()) {
-      window.alert('付款資料輸入有誤');
-      return;
+      window.alert('付款資料輸入有誤')
+      return
     }
 
-    const result = await tappay.getPrime();
+    const result = await tappay.getPrime()
     if (result.status !== 0) {
-      window.alert('付款資料輸入有誤');
-      return;
+      window.alert('付款資料輸入有誤')
+      return
     }
 
     const { data } = await api.checkout(
@@ -382,11 +379,11 @@ function Checkout() {
           list: cart.getItems(),
         },
       },
-      jwtToken
-    );
-    window.alert('付款成功');
-    cart.clearItems();
-    navigate('/thankyou', { state: { orderNumber: data.number } });
+      jwtToken,
+    )
+    window.alert('付款成功')
+    cart.clearItems()
+    navigate('/profile', { state: { orderNumber: data.number } })
   }
 
   return (
@@ -421,7 +418,7 @@ function Checkout() {
                       checked={recipient.time === option.value}
                       onChange={(e) => {
                         if (e.target.checked)
-                          setRecipient({ ...recipient, time: option.value });
+                          setRecipient({ ...recipient, time: option.value })
                       }}
                     />
                     <FormCheckLabel>{option.label}</FormCheckLabel>
@@ -473,7 +470,7 @@ function Checkout() {
       </TotalPrice>
       <CheckoutButton onClick={checkout}>確認付款</CheckoutButton>
     </Wrapper>
-  );
+  )
 }
 
-export default Checkout;
+export default Checkout

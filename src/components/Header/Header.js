@@ -1,17 +1,16 @@
+import { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import styled from 'styled-components'
 
-import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import styled from "styled-components";
-
-import logo from "./logo.png";
-import search from "./search.png";
-import cart from "./cart.png";
-import cartMobile from "./cart-mobile.png";
-import profile from "./profile.png";
-import profileMobile from "./profile-mobile.png";
-import social from "./social.png";
-import socialMobile from "./social-mobile.png";
-import CartContext from "../../contexts/CartContext";
+import logo from './logo.png'
+import search from './search.png'
+import cart from './cart.png'
+import cartMobile from './cart-mobile.png'
+import profile from './profile.png'
+import profileMobile from './profile-mobile.png'
+import social from './social.png'
+import socialMobile from './social-mobile.png'
+import CartContext from '../../contexts/CartContext'
 
 const Wrapper = styled.div`
   position: fixed;
@@ -69,14 +68,14 @@ const CategoryLink = styled(Link)`
   padding-right: 11px;
   position: relative;
   text-decoration: none;
-  color: ${(props) => (props.$isActive ? "#8b572a" : "#3f3a3a")};
+  color: ${(props) => (props.$isActive ? '#8b572a' : '#3f3a3a')};
 
   @media screen and (max-width: 1279px) {
     font-size: 16px;
     letter-spacing: normal;
     padding: 0;
     text-align: center;
-    color: ${(props) => (props.$isActive ? "white" : "#828282")};
+    color: ${(props) => (props.$isActive ? 'white' : '#828282')};
     line-height: 50px;
     flex-grow: 1;
   }
@@ -90,7 +89,7 @@ const CategoryLink = styled(Link)`
   }
 
   & + &::before {
-    content: "|";
+    content: '|';
     position: absolute;
     left: 0;
     color: #3f3a3a;
@@ -170,7 +169,7 @@ const PageLink = styled(Link)`
 
   & + &::before {
     @media screen and (max-width: 1279px) {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       width: 1px;
@@ -220,7 +219,7 @@ const PageLinkSocialIcon = styled(PageLinkIcon)`
     background-size: 25px 25px;
     background-image: url(${socialMobile});
   }
-`;
+`
 
 const PageLinkIconNumber = styled.div`
   position: absolute;
@@ -246,22 +245,23 @@ const PageLinkText = styled.div`
 
 const categories = [
   {
-    name: "women",
-    displayText: "女裝",
+    name: 'women',
+    displayText: '女裝',
   },
   {
-    name: "men",
-    displayText: "男裝",
+    name: 'men',
+    displayText: '男裝',
   },
   {
-    name: "accessories",
-    displayText: "配件",
+    name: 'accessories',
+    displayText: '配件',
   },
 ]
 
 function Header() {
+  // const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
+  // const LoginNameInfo = LoginName.name
 
-  const LoginName = JSON.parse(window.localStorage.getItem('checkInToken'))
   const [inputValue, setInputValue] = useState('')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -289,8 +289,8 @@ function Header() {
       <SearchInput
         placeholder="搜尋商品"
         onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            navigate(`/?keyword=${inputValue}`);
+          if (e.key === 'Enter') {
+            navigate(`/?keyword=${inputValue}`)
           }
         }}
         onChange={(e) => setInputValue(e.target.value)}
@@ -305,7 +305,7 @@ function Header() {
         </PageLink>
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
-          <PageLinkText>{LoginName ? LoginName.name : '會員'}</PageLinkText>
+          {/* <PageLinkText>{LoginNameInfo ? LoginNameInfo : '會員'}</PageLinkText> */}
         </PageLink>
         <PageLink to="/social">
           <PageLinkSocialIcon icon={social} />
