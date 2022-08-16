@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import main from './main.png'
-import UploadPost from '../UploadPost/UploadPost'
+import PostUpload from '../PostUpload/PostUpload'
 import FollowingList from '../FollowingList/FollowingList'
 
 import styled from 'styled-components'
@@ -258,7 +258,7 @@ function Member() {
               })}
           </>
         )}
-        {currentPage === 1 && <UploadPost />}
+        {currentPage === 1 && <PostUpload />}
         {currentPage === 2 && <FollowingList></FollowingList>}
       </Wrapper>
     </>

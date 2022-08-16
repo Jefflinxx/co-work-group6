@@ -267,7 +267,8 @@ function Profile() {
   const emailRef = useRef();
   const checkinAccount = useRef();
   const checkinPassword = useRef();
-  // const photoRef = useRef()
+  const currImage = images[0];
+  console.log(currImage);
 
   let jwtToken = window.localStorage.getItem("jwtToken");
   async function getProfile() {
@@ -295,20 +296,15 @@ function Profile() {
         alert("表格不可為空");
         setregisterToken(false);
       } else {
-        let registerData = {
-          name: accountRef.current.value,
-          email: emailRef.current.value,
-          password: passwordRef.current.value,
-          // photo:
-        };
-        console.log(registerData);
+        var formdata = new FormData();
+        formdata.append("signup_upload_files", currImage);
+        formdata.append("name", accountRef.current.value);
+        formdata.append("email", emailRef.current.value);
+        formdata.append("password", passwordRef.current.value);
         const response = await fetch(
           `https://hazlin.work/api/1.0/user/signup`,
           {
-            body: JSON.stringify(registerData),
-            headers: new Headers({
-              "Content-Type": "application/json",
-            }),
+            body: formdata,
             method: "POST",
           }
         );
@@ -317,34 +313,38 @@ function Profile() {
           accountRef.current.value = "";
           passwordRef.current.value = "";
           emailRef.current.value = "";
-          // photoRef.current.value = ''
-          // setIsRegister(true)
+          // console.log(await response.json())
         } else if (response.status === 403) {
           alert("email重複註冊");
         }
+        // console.log(await response.json())
         return await response.json();
       }
     };
+
     async function setUserInfo() {
       let resJSON = await register();
       let resUserInfo = await resJSON.data;
       let registerName = await resUserInfo.user.name;
       let resUserToken = await resUserInfo.access_token;
       let registerEmail = await resUserInfo.user.email;
-      let registerPhoto = await resUserInfo.user_picture;
+      let registerPhoto = await resUserInfo.picture;
       let UserInfo = {
         name: registerName,
         token: resUserToken,
         email: registerEmail,
         photo: registerPhoto,
       };
+      console.log(UserInfo);
       window.localStorage.setItem("registerToken", JSON.stringify(UserInfo));
     }
     setUserInfo();
+    console.log(123);
     if (window.localStorage.getItem("registerToken") !== []) {
       setregisterToken(true);
     }
   };
+
   const checkInProcess = () => {
     const checkIn = async () => {
       if (!checkinAccount.current.value || !checkinPassword.current.value) {
@@ -367,8 +367,6 @@ function Profile() {
         );
         if (response.status === 200) {
           alert("成功登入");
-          // checkinAccount.current.value = ''
-          // checkinPassword.current.value = ''
         } else if (response.status === 403) {
           alert("Email或帳號有誤");
         }
@@ -386,20 +384,18 @@ function Profile() {
         name: resCheckName,
         email: resCheckEmail,
       };
-      window.localStorage.setItem(
-        "checkInToken",
-        JSON.stringify(setcheckInInfo)
-      );
+      window.localStorage.setItem("jwtToken", JSON.stringify(setcheckInInfo));
     }
     setUserInfo();
-    if (window.localStorage.getItem("checkInToken") !== []) {
+    if (window.localStorage.getItem("jwtToken") !== []) {
       setcheckinToken(true);
     }
   };
 
   function directToMember() {
     if (!registerToken) {
-      alert("尚未有會員資料");
+      console.log("尚未有會員資料");
+      // alert('尚未有會員資料')
     }
     let directInfo = JSON.parse(window.localStorage.getItem("registerToken"));
     let registernData = {
@@ -410,13 +406,12 @@ function Profile() {
       token: directInfo.token,
     };
     window.localStorage.removeItem("registerToken");
-    window.localStorage.setItem("checkInToken", JSON.stringify(registernData));
+    window.localStorage.setItem("jwtToken", JSON.stringify(registernData));
 
     setcheckinToken(true);
   }
 
-  // const registerData = JSON.parse(window.localStorage.getItem('registerToken'))
-  const LoginName = JSON.parse(window.localStorage.getItem("checkInToken"));
+  const LoginName = JSON.parse(window.localStorage.getItem("jwtToken"));
   useEffect(() => {
     if (LoginName !== null) {
       // setLoginNameInfo(LoginNameInfo)
@@ -496,7 +491,7 @@ function Profile() {
                             <Tag
                               type="file"
                               multiple
-                              accept=".png, .jpg, .jpeg"
+                              accept="image/*"
                               onChange={getPhotoInfo}
                             />
                           </PhotoDivide>
@@ -590,7 +585,7 @@ function Profile() {
               </MemberText>
               <CheckOutBtn
                 onClick={() => {
-                  window.localStorage.removeItem("checkInToken");
+                  window.localStorage.removeItem("jwtToken");
                   alert("成功登出");
                   setcheckinToken(false);
                   setregisterToken(false);
