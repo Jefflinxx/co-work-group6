@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
-import { Reset } from 'styled-reset';
+import { useState, useEffect, useRef } from "react";
+import { Outlet } from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
+import { Reset } from "styled-reset";
+import { io } from "socket.io-client";
 
-import Footer from './components/Footer/Footer';
-import Header from './components/Header/Header';
-import CartContext from './contexts/CartContext';
-import PingFangTCRegular from './fonts/PingFang-TC-Regular-2.otf';
-import PingFangTCThin from './fonts/PingFang-TC-Thin-2.otf';
-import NotoSansTCRegular from './fonts/NotoSansTC-Regular.otf';
-import NotoSansTCBold from './fonts/NotoSansTC-Bold.otf';
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import CartContext from "./contexts/CartContext";
+import PingFangTCRegular from "./fonts/PingFang-TC-Regular-2.otf";
+import PingFangTCThin from "./fonts/PingFang-TC-Thin-2.otf";
+import NotoSansTCRegular from "./fonts/NotoSansTC-Regular.otf";
+import NotoSansTCBold from "./fonts/NotoSansTC-Bold.otf";
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
@@ -57,8 +58,9 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const [cartItems, setCartItems] = useState(
-    JSON.parse(window.localStorage.getItem('cartItems')) || []
+    JSON.parse(window.localStorage.getItem("cartItems")) || []
   );
+  const socket = useRef(null);
 
   function getItems() {
     return cartItems;
@@ -67,8 +69,8 @@ function App() {
   function addItem(item) {
     const newCartItems = [...cartItems, item];
     setCartItems(newCartItems);
-    window.localStorage.setItem('cartItems', JSON.stringify(newCartItems));
-    window.alert('已加入商品');
+    window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+    window.alert("已加入商品");
   }
 
   function changeItemQuantity(itemIndex, itemQuantity) {
@@ -81,21 +83,21 @@ function App() {
         : item
     );
     setCartItems(newCartItems);
-    window.localStorage.setItem('cartItems', JSON.stringify(newCartItems));
-    window.alert('已修改數量');
+    window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+    window.alert("已修改數量");
   }
 
   function deleteItem(itemIndex) {
     const newCartItems = cartItems.filter((_, index) => index !== itemIndex);
     setCartItems(newCartItems);
-    window.localStorage.setItem('cartItems', JSON.stringify(newCartItems));
-    window.alert('已刪除商品');
+    window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+    window.alert("已刪除商品");
   }
 
   function clearItems() {
     const newCartItems = [];
     setCartItems(newCartItems);
-    window.localStorage.setItem('cartItems', JSON.stringify(newCartItems));
+    window.localStorage.setItem("cartItems", JSON.stringify(newCartItems));
   }
 
   const cart = {
@@ -105,6 +107,22 @@ function App() {
     deleteItem,
     clearItems,
   };
+
+  useEffect(() => {
+    socket.current = io.connect("https://hazlin.work/", {
+      extraHeaders: {
+        Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+      },
+    });
+    // message from server
+    socket.current.on("liked", (msg) => {
+      console.log("msg: ", msg);
+    });
+    // notification from server
+    socket.current.on("followed", (msg) => {
+      console.log("msg: ", msg);
+    });
+  }, [socket]);
 
   return (
     <CartContext.Provider value={cart}>

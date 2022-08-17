@@ -345,14 +345,14 @@ const PostFollowIcon = styled.div`
   background-image: ${(props) => {
     //console.log(props.followers);
     //console.log(props.uid);
-    console.log(props.followers.includes(props.uid));
+    //console.log(props.followers.includes(props.uid));
     return props.followers.includes(props.uid)
       ? `url(${activeFollow})`
       : `url(${follow})`;
   }};
-
-  ${"" /* background-image:url(${follow}); */}
-  background-size: 36px 32px;
+  background-size: ${(props) => {
+    return props.followers.includes(props.uid) ? `40px 40px` : `36px 32px`;
+  }};
   @media screen and (max-width: 412px) {
     margin-left: 238px;
   }
@@ -370,15 +370,17 @@ const PostSaveIcon = styled.div`
   background-image: ${(props) => {
     //console.log(props.followers);
     //console.log(props.uid);
-    console.log(props.savers.includes(props.postId));
-    return props.savers.includes(props.postId)
+    //console.log(props.savers.includes(props.postId));
+    return props.savers.includes(props.uid)
       ? `url(${activeSave})`
       : `url(${save})`;
   }};
-  background-size: 34px 30px;
+  background-size: ${(props) => {
+    return props.savers.includes(props.uid) ? `34px 34px` : `34px 30px`;
+  }};
 `;
 
-const Background = styled.div`
+const ActiveBackground = styled.div`
   display: ${(props) => (props.isActive ? "block" : "none")};
   position: fixed;
   top: 0px;
@@ -503,7 +505,9 @@ const ActivePostFollowIcon = styled.div`
       ? `url(${activeFollow})`
       : `url(${follow})`;
   }};
-  background-size: 36px 32px;
+  background-size: ${(props) => {
+    return props.followers.includes(props.uid) ? `40px 40px` : `36px 32px`;
+  }};
   @media screen and (max-width: 412px) {
     margin-left: 238px;
   }
@@ -519,7 +523,7 @@ const ActivePostSaveIcon = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-image: ${(props) => {
-    return props.savers?.includes(props.postId)
+    return props.savers?.includes(props.uid)
       ? `url(${activeSave})`
       : `url(${save})`;
   }};
@@ -695,7 +699,7 @@ function Social() {
   const getPost = async () => {
     const response = await fetch("https://hazlin.work/api/1.0/posts", {
       headers: {
-        Authorization: ` Bearer ${JSON.parse(localStorage.checkInToken).token}`,
+        Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
       },
     });
 
@@ -709,12 +713,31 @@ function Social() {
     setUserId(a.uid);
   };
 
+  const getSearch = async (input) => {
+    const response = await fetch(
+      `https://hazlin.work/api/1.0/posts/search?query_string=${input}`,
+      {
+        headers: {
+          Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      console.log("getPost成功");
+    } else if (response.status === 403) {
+      alert("帳號有誤，請確實登入");
+    }
+    const a = await response.json();
+    setPostData(a);
+  };
+
   console.log(postData);
 
   const postHeart = async (postId) => {
     const response = await fetch("https://hazlin.work/api/1.0/posts/heart", {
       headers: {
-        Authorization: ` Bearer ${JSON.parse(localStorage.checkInToken).token}`,
+        Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ post_id: postId }),
@@ -732,13 +755,13 @@ function Social() {
     setRenderCount(renderCount + 1);
   };
 
-  const postFollow = async (followId) => {
+  const postFollow = async (postId, followId) => {
     const response = await fetch("https://hazlin.work/api/1.0/posts/follow", {
       headers: {
-        Authorization: ` Bearer ${JSON.parse(localStorage.checkInToken).token}`,
+        Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ followed_id: followId }),
+      body: JSON.stringify({ post_id: postId, followed_id: followId }),
       method: "PATCH",
     });
 
@@ -753,14 +776,17 @@ function Social() {
   };
 
   const postSaver = async (postId, uid) => {
-    const response = await fetch("https://hazlin.work/api/1.0/posts/follow", {
-      headers: {
-        Authorization: ` Bearer ${JSON.parse(localStorage.checkInToken).token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ post_id: postId, user_id: uid }),
-      method: "PATCH",
-    });
+    const response = await fetch(
+      `https://hazlin.work/api/1.0/posts/save/${postId}`,
+      {
+        headers: {
+          Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ post_id: postId, user_id: uid }),
+        method: "PATCH",
+      }
+    );
 
     if (response.status === 200) {
       console.log("postSaver成功");
@@ -773,7 +799,7 @@ function Social() {
   };
 
   useEffect(() => {
-    if (localStorage.checkInToken) {
+    if (localStorage.jwtToken) {
       getPost();
     }
   }, [renderCount]);
@@ -781,241 +807,263 @@ function Social() {
   useEffect(() => {
     socket.current = io.connect("https://hazlin.work/", {
       extraHeaders: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiIyMjQ0NjYiLCJlbWFpbCI6IjIyNDQ2NkBhcHB3b3Jrcy50dyIsInBpY3R1cmUiOiI4NmQ4OTU3MC5qcGVnIiwiaWF0IjoxNjYwNTUxMjg2fQ.xI1AdV9JDAEsR8XHuyA1Sqg1eobT-4Neqn9v2zGVDDI`,
+        Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
       },
     });
     // message from server
-    socket.current.on("liked", (msg) => {
-      console.log("msg: ", msg);
-    });
+    // socket.current.on("liked", (msg) => {
+    //   console.log("msg: ", msg);
+    // });
     // notification from server
-    socket.current.on("followed", (msg) => {
-      console.log("msg: ", msg);
-    });
+    // socket.current.on("followed", (msg) => {
+    //   console.log("msg: ", msg);
+    // });
   }, [socket]);
 
   return (
     <>
       {postData && (
-        <Wrapper>
-          <CenterWrapper>
-            <ChangeModeWrapper>
-              <ChangeModeDiv
-                onClick={() => {
-                  console.log("click");
-                  setMode(!mode);
-                }}
-              >
-                <BallIcon></BallIcon>
-                <RectangleIcon></RectangleIcon>
-                <ChangeModeButton toggle={mode}></ChangeModeButton>
-              </ChangeModeDiv>
-            </ChangeModeWrapper>
-            <SortWrapper>
-              <SortSearchInput
-                placeholder="搜尋貼文"
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    //navigate(`/?keyword=${inputValue}`);
-                  }
-                }}
-                onChange={(e) => setInputValue(e.target.value)}
-                value={inputValue}
-              />
-              <SortDiv
-                onClick={() => {
-                  setSort(!sort);
-                }}
-              >
-                <SortHeartIcon></SortHeartIcon>
-                <SortTimeIcon></SortTimeIcon>
-                <SortButton toggle={sort}></SortButton>
-              </SortDiv>
-            </SortWrapper>
-            <SortPhoneWrapper>
-              <SortText>愛心</SortText>
-              <Split></Split>
-              <SortText>時間</SortText>
-            </SortPhoneWrapper>
-            <PostWrapper>
-              {postData.list.map((i, index) => {
-                return (
-                  <>
-                    <Post>
-                      {/* 手機版 */}
-                      <MobileUserDiv>
-                        <MobileUserImage src={i.user_picture} />
-                        <MobileUserText>{i.uname}</MobileUserText>
-                      </MobileUserDiv>
-
-                      <PostImage
-                        src={i.postPic}
-                        onClick={() => {
-                          if (window.innerWidth > 412) {
-                            console.log("click");
-                            setIsActive(true);
-                            setActivePostPicIndex(index);
-                          }
-                        }}
-                      />
-                      {/* 收機版 */}
-                      <MobileTagDiv
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                      >
-                        <MobileProductNameDiv>
-                          {i.products.map((i) => (
-                            <MobileProductName
-                              onClick={() => {
-                                navigate(`../products/${i.pid}`);
-                              }}
-                            >
-                              {i.pName}
-                            </MobileProductName>
-                          ))}
-                        </MobileProductNameDiv>
-                        <MobileTagNameDiv>
-                          {i.tags.map((i) => (
-                            <MobileTagName>{i}</MobileTagName>
-                          ))}
-                        </MobileTagNameDiv>
-                      </MobileTagDiv>
-
-                      <PostIconWrapper
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                      >
-                        <PostHeartIcon
-                          uid={userId}
-                          hearters={i.hearters}
-                          onClick={() => {
-                            postHeart(i.postId);
-                            socket.current.emit("like", {
-                              post_id: i.postId,
-                              hearted_user_id: i.uid,
-                            });
-                          }}
-                        ></PostHeartIcon>
-                        <PostIconNumber>{i.hearts}</PostIconNumber>
-                        <PostFollowIcon
-                          uid={userId}
-                          followers={i.followers}
-                          onClick={() => {
-                            postFollow(i.uid);
-                            socket.current.emit("follow", {
-                              followed_id: i.uid,
-                            });
-                          }}
-                        ></PostFollowIcon>
-                        <PostSaveIcon
-                          postId={i.postId}
-                          savers={i.savers}
-                          onClick={() => {
-                            postSaver(i.postId, i.uid);
-                          }}
-                        ></PostSaveIcon>
-                      </PostIconWrapper>
-                    </Post>
-                  </>
-                );
-              })}
-              {/* pop up */}
-              <Background isActive={isActive}></Background>
-              <ActivePost
-                onClick={(e) => {
-                  console.log("cancel");
-                  setIsActive(false);
-                }}
-                isActive={isActive}
-              >
-                <ActiveUserDiv>
-                  <ActiveUserImage
-                    src={postData.list[activePostPicIndex].user_picture}
-                  />
-                  <ActiveUserText>
-                    {postData.list[activePostPicIndex].uname}
-                  </ActiveUserText>
-                </ActiveUserDiv>
-                <ActivePostImage
-                  src={postData.list[activePostPicIndex].postPic}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log("no cancel");
+        <>
+          {/* 動畫模式 */}
+          <Wrapper></Wrapper>
+          {/* 一般模式 */}
+          <Wrapper>
+            <CenterWrapper>
+              <ChangeModeWrapper>
+                <ChangeModeDiv
+                  onClick={() => {
+                    console.log("click");
+                    setMode(!mode);
                   }}
+                >
+                  <BallIcon></BallIcon>
+                  <RectangleIcon></RectangleIcon>
+                  <ChangeModeButton toggle={mode}></ChangeModeButton>
+                </ChangeModeDiv>
+              </ChangeModeWrapper>
+              <SortWrapper>
+                <SortSearchInput
+                  placeholder="搜尋貼文"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      navigate(`?postKeyword=${inputValue}`);
+                      getSearch(inputValue);
+                    }
+                  }}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  value={inputValue}
                 />
-                <ActivePostIconWrapper
-                  onClick={(e) => {
-                    e.stopPropagation();
+                <SortDiv
+                  onClick={() => {
+                    setSort(!sort);
                   }}
                 >
-                  <ActivePostHeartIcon
-                    uid={userId}
-                    hearters={postData.list[activePostPicIndex].hearters}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      postHeart(postData.list[activePostPicIndex].postId);
-                      socket.current.emit("like", {
-                        post_id: postData.list[activePostPicIndex].postId,
-                        hearted_user_id: userId,
-                      });
-                    }}
-                  ></ActivePostHeartIcon>
-                  <ActivePostIconNumber>
-                    {postData.list[activePostPicIndex].hearts}
-                  </ActivePostIconNumber>
-                  <ActivePostFollowIcon
-                    uid={userId}
-                    followers={postData.list[activePostPicIndex].followers}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      postFollow(postData.list[activePostPicIndex].uid);
-                      socket.current.emit("follow", {
-                        followed_id: userId,
-                      });
-                    }}
-                  ></ActivePostFollowIcon>
-                  <ActivePostSaveIcon
-                    postId={postData.list[activePostPicIndex].postId}
-                    savers={postData.list[activePostPicIndex].savers}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      postSaver(
-                        postData.list[activePostPicIndex].postId,
-                        postData.list[activePostPicIndex].uid
-                      );
-                    }}
-                  ></ActivePostSaveIcon>
-                </ActivePostIconWrapper>
-                <TagDiv
+                  <SortHeartIcon></SortHeartIcon>
+                  <SortTimeIcon></SortTimeIcon>
+                  <SortButton toggle={sort}></SortButton>
+                </SortDiv>
+              </SortWrapper>
+              <SortPhoneWrapper>
+                <SortText>愛心</SortText>
+                <Split></Split>
+                <SortText>時間</SortText>
+              </SortPhoneWrapper>
+              <PostWrapper>
+                {postData.list.map((i, index) => {
+                  return (
+                    <>
+                      <Post>
+                        {/* 手機版 */}
+                        <MobileUserDiv>
+                          <MobileUserImage src={i.user_picture} />
+                          <MobileUserText>{i.uname}</MobileUserText>
+                        </MobileUserDiv>
+
+                        <PostImage
+                          src={i.postPic}
+                          onClick={() => {
+                            if (window.innerWidth > 412) {
+                              console.log("click");
+                              setIsActive(true);
+                              setActivePostPicIndex(index);
+                            }
+                          }}
+                        />
+                        {/* 收機版 */}
+                        <MobileTagDiv
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <MobileProductNameDiv>
+                            {i.products.map((i) => (
+                              <MobileProductName
+                                onClick={() => {
+                                  navigate(`../products/${i.pid}`);
+                                }}
+                              >
+                                {i.pName}
+                              </MobileProductName>
+                            ))}
+                          </MobileProductNameDiv>
+                          <MobileTagNameDiv>
+                            {i.tags.map((i) => (
+                              <MobileTagName>{i}</MobileTagName>
+                            ))}
+                          </MobileTagNameDiv>
+                        </MobileTagDiv>
+
+                        <PostIconWrapper
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <PostHeartIcon
+                            uid={userId}
+                            hearters={i.hearters}
+                            onClick={() => {
+                              postHeart(i.postId);
+                              if (!i.hearters.includes(userId)) {
+                                console.log("socket click heart!");
+                                socket.current.emit("like", {
+                                  post_id: i.postId,
+                                  hearted_user_id: i.uid,
+                                });
+                              }
+                            }}
+                          ></PostHeartIcon>
+                          <PostIconNumber>{i.hearts}</PostIconNumber>
+                          <PostFollowIcon
+                            uid={userId}
+                            followers={i.followers}
+                            onClick={() => {
+                              postFollow(i.postId, i.uid);
+                              if (!i.followers.includes(userId)) {
+                                console.log("socket follow");
+                                socket.current.emit("follow", {
+                                  followed_id: i.uid,
+                                });
+                              }
+                            }}
+                          ></PostFollowIcon>
+                          <PostSaveIcon
+                            uid={userId}
+                            savers={i.savers}
+                            onClick={() => {
+                              console.log("save");
+                              postSaver(i.postId, i.uid);
+                            }}
+                          ></PostSaveIcon>
+                        </PostIconWrapper>
+                      </Post>
+                    </>
+                  );
+                })}
+                {/* pop up */}
+                <ActiveBackground isActive={isActive}></ActiveBackground>
+                <ActivePost
                   onClick={(e) => {
-                    e.stopPropagation();
+                    console.log("cancel");
+                    setIsActive(false);
                   }}
+                  isActive={isActive}
                 >
-                  <ProductNameDiv>
-                    {postData.list[activePostPicIndex].products.map((i) => (
-                      <ProductName
-                        onClick={() => {
-                          navigate(`../products/${i.pid}`);
-                        }}
-                      >
-                        {i.pName}
-                      </ProductName>
-                    ))}
-                  </ProductNameDiv>
-                  <TagNameDiv>
-                    {postData.list[activePostPicIndex].tags.map((i) => (
-                      <TagName>{i}</TagName>
-                    ))}
-                  </TagNameDiv>
-                </TagDiv>
-              </ActivePost>
-            </PostWrapper>
-          </CenterWrapper>
-        </Wrapper>
+                  <ActiveUserDiv>
+                    <ActiveUserImage
+                      src={postData.list[activePostPicIndex].user_picture}
+                    />
+                    <ActiveUserText>
+                      {postData.list[activePostPicIndex].uname}
+                    </ActiveUserText>
+                  </ActiveUserDiv>
+                  <ActivePostImage
+                    src={postData.list[activePostPicIndex].postPic}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("no cancel");
+                    }}
+                  />
+                  <ActivePostIconWrapper
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <ActivePostHeartIcon
+                      uid={userId}
+                      hearters={postData.list[activePostPicIndex].hearters}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        postHeart(postData.list[activePostPicIndex].postId);
+                        if (
+                          !postData.list[activePostPicIndex].hearters.includes(
+                            userId
+                          )
+                        ) {
+                          socket.current.emit("like", {
+                            post_id: postData.list[activePostPicIndex].postId,
+                            hearted_user_id: userId,
+                          });
+                        }
+                      }}
+                    ></ActivePostHeartIcon>
+                    <ActivePostIconNumber>
+                      {postData.list[activePostPicIndex].hearts}
+                    </ActivePostIconNumber>
+                    <ActivePostFollowIcon
+                      uid={userId}
+                      followers={postData.list[activePostPicIndex].followers}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        postFollow(
+                          postData.list[activePostPicIndex].postId,
+                          postData.list[activePostPicIndex].uid
+                        );
+                        socket.current.emit("follow", {
+                          followed_id: userId,
+                        });
+                      }}
+                    ></ActivePostFollowIcon>
+                    <ActivePostSaveIcon
+                      postId={postData.list[activePostPicIndex].postId}
+                      savers={postData.list[activePostPicIndex].savers}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        postSaver(
+                          postData.list[activePostPicIndex].postId,
+                          postData.list[activePostPicIndex].uid
+                        );
+                      }}
+                    ></ActivePostSaveIcon>
+                  </ActivePostIconWrapper>
+                  <TagDiv
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <ProductNameDiv>
+                      {postData.list[activePostPicIndex].products.map((i) => (
+                        <ProductName
+                          onClick={() => {
+                            navigate(`../products/${i.pid}`);
+                          }}
+                        >
+                          {i.pName}
+                        </ProductName>
+                      ))}
+                    </ProductNameDiv>
+                    <TagNameDiv>
+                      {postData.list[activePostPicIndex].tags.map((i) => (
+                        <TagName>{i}</TagName>
+                      ))}
+                    </TagNameDiv>
+                  </TagDiv>
+                </ActivePost>
+              </PostWrapper>
+            </CenterWrapper>
+          </Wrapper>
+        </>
       )}
-      {!localStorage.checkInToken && (
+      {!localStorage.jwtToken && (
         <Wrapper>
           <MoreInfoDiv>
             <MoreInfo>請先登入已獲取更多資訊</MoreInfo>
