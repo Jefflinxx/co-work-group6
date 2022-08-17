@@ -379,11 +379,11 @@ function Checkout() {
           list: cart.getItems(),
         },
       },
-      jwtToken,
+      jwtTokenPerson,
     )
     window.alert('付款成功')
     cart.clearItems()
-    navigate('/profile', { state: { orderNumber: data.number } })
+    navigate('/profile')
   }
 
   return (

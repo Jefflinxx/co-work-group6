@@ -75,11 +75,10 @@ const ShowMore = styled.div`
     color: white;
   }
 `
-const ProductImage = styled.div`
+const ProductImage = styled.img`
   width: 114px;
   aspect-ratio: 0.75/1;
 
-  background-image: url(${main});
   background-repeat: no-repeat;
   background-size: cover;
 `
@@ -151,37 +150,31 @@ function Member() {
   const [isClick, setIsClick] = useState(false)
   const [orderIsOpen, setOrderIsopen] = useState(false)
   const [currentPage, setCurrentPage] = useState()
+  const [pastProduct, setPastProduct] = useState()
 
   function showMore() {
     setIsOpen((prevCheck) => !prevCheck)
     setIsActive((current) => !current)
   }
-
+  let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
+  let uploadTokenInfo = uploadToken.token
   async function fetchOrders() {
     setIsClick((current) => !current)
-    if (fakeOrder.list.length <= 0) {
-      alert('目前尚無訂單')
-    } else {
-      setOrderIsopen((prevCheck) => !prevCheck)
+    const response = await fetch(`https://hazlin.work/api/1.0/orders`, {
+      headers: new Headers({
+        Authorization: `Bearer ${uploadTokenInfo}`,
+      }),
+    })
+    if (response.status === 200) {
+      // console.log(await response.json())
+      const productList = await response.json()
+      setPastProduct(productList)
+    } else if ((await response.json().list) <= 0) {
+      alert('您尚未購買過任何商品')
     }
-    // let faketoken = JSON.parse(window.localStorage.getItem('checkInToken'))
-    // // console.log(faketoken.token)
-    // faketoken.token =
-    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJZYWhvbyIsImVtYWlsIjoiMzMzMzNAZ21haWwuY29tIiwicGljdHVyZSI6bnVsbCwiaWF0IjoxNjYwMjg4ODQ0fQ.0WnS1d5OiGfIv9MqkKOVpugl-gwPvWPjHVSum2M8kkM'
-    // window.localStorage.setItem('checkInToken', JSON.stringify(faketoken.token))
-
-    console.log(123)
-    // try {
-    //   const response = await fetch('https://hazlin.work/api/1.0/user/orders')
-    //   // if ((await response.json().length) <= 0) {
-    //   //   console.log('尚無購買任何商品')
-    //   // }
-    //   console.log(await response.json())
-    //   return await response.json()
-    // } catch {
-    //   console.log((err) => `Error:${err}`)
-    // }
   }
+  // console.log(pastProduct)
+
   return (
     <>
       <Wrapper>
@@ -210,11 +203,11 @@ function Member() {
             >
               訂單明細
             </OpenOrder>
-            {orderIsOpen && (
+            {pastProduct && (
               <>
                 <Order>
-                  <TextTitle>訂單編號：123</TextTitle>
-                  <TextTitle>日期：123</TextTitle>
+                  <TextTitle>訂單編號：{pastProduct.list[0].oid}</TextTitle>
+                  <TextTitle>日期：{pastProduct.list[0].time}</TextTitle>
                   <OrderDivide>
                     <TextTitle>金額：NT 123</TextTitle>
                     <ShowMore
@@ -230,32 +223,33 @@ function Member() {
                 </Order>
               </>
             )}
-            {isOpen &&
-              fakeOrder.list.map((list, index) => {
-                return (
-                  <Order key={index}>
-                    <OrderDivide>
+            {isOpen && pastProduct
+              ? pastProduct.list.map((list, index) => {
+                  return (
+                    <Order key={index}>
                       <OrderDivide>
-                        <ProductImage></ProductImage>
-                        <OrderInfo>
-                          <p>{list.ptitle}</p>
-                          <p>顏色｜{list.color}</p>
-                          <p>尺寸｜{list.size}</p>
-                        </OrderInfo>
+                        <OrderDivide>
+                          <ProductImage src={list.postPic} />
+                          <OrderInfo>
+                            <p>{list.ptitle}</p>
+                            <p>顏色｜{list.color}</p>
+                            <p>尺寸｜{list.size}</p>
+                          </OrderInfo>
+                        </OrderDivide>
+                        <OrderPriceDivide>
+                          <TextTitle>數量</TextTitle>
+                          <TextTitle>{list.qty}</TextTitle>
+                        </OrderPriceDivide>
+                        <OrderPriceDivide>
+                          <TextTitle>小計</TextTitle>
+                          <TextTitle>NT {list.qty * list.price}</TextTitle>
+                        </OrderPriceDivide>
                       </OrderDivide>
-                      <OrderPriceDivide>
-                        <TextTitle>數量</TextTitle>
-                        <TextTitle>{list.qty}</TextTitle>
-                      </OrderPriceDivide>
-                      <OrderPriceDivide>
-                        <TextTitle>小計</TextTitle>
-                        <TextTitle>NT {list.qty * list.price}</TextTitle>
-                      </OrderPriceDivide>
-                    </OrderDivide>
-                    <Line></Line>
-                  </Order>
-                )
-              })}
+                      <Line></Line>
+                    </Order>
+                  )
+                })
+              : null}
           </>
         )}
         {currentPage === 1 && <PostUpload />}

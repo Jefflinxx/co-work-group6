@@ -149,10 +149,7 @@ function FollowingList() {
 
   // useEffect(() => {
   //   async function showSavedPost() {
-  //     let faketoken =
-  //       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJZYWhvbyIsImVtYWlsIjoiMzMzMzNAZ21haWwuY29tIiwicGljdHVyZSI6bnVsbCwiaWF0IjoxNjYwMjg4ODQ0fQ.0WnS1d5OiGfIv9MqkKOVpugl-gwPvWPjHVSum2M8kkM'
-  //     window.localStorage.removeItem('checkInToken')
-  //     window.localStorage.setItem('Authorization', faketoken)
+
   //     const response = await fetch(`https://hazlin.work/api/1.0/user/saved`, {
   //       headers: new Headers({
   //         Authorization: `Bearer ${faketoken}`,

@@ -259,14 +259,18 @@ const categories = [
 ]
 
 function Header() {
-  // const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
-  // const LoginNameInfo = LoginName.name
-
   const [inputValue, setInputValue] = useState('')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const [loginName, setLoginName] = useState()
   const category = searchParams.get('category')
   const { getItems } = useContext(CartContext)
+
+  // const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
+  // const LoginNameInfo = LoginName.name
+  // if (LoginName) {
+  //   setLoginName(LoginNameInfo)
+  // }
 
   useEffect(() => {
     if (category) setInputValue('')
@@ -305,7 +309,7 @@ function Header() {
         </PageLink>
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
-          {/* <PageLinkText>{LoginNameInfo ? LoginNameInfo : '會員'}</PageLinkText> */}
+          {/* <PageLinkText>{loginName ? loginName : '會員'}</PageLinkText>  */}
         </PageLink>
         <PageLink to="/social">
           <PageLinkSocialIcon icon={social} />
