@@ -684,7 +684,7 @@ const MoreInfo = styled.p`
 
 const AnimateDiv = styled.div`
   display: ${(props) => {
-    return props.mode ? `none` : `block`;
+    return props.$mode ? "none" : "block";
   }};
   overflow: hidden;
 `;
@@ -865,7 +865,7 @@ function Social() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ post_id: postId, followed_id: followId }),
-      method: "PATCH",
+      method: "POST",
     });
 
     if (response.status === 200) {
@@ -901,7 +901,12 @@ function Social() {
     setRenderCount(renderCount + 1);
   };
   console.log("postkeyword", postKeyword);
+
   useEffect(() => {
+    console.log(postKeyword);
+    if (!postKeyword) {
+      setInputValue("");
+    }
     if (localStorage.jwtToken) {
       if (postKeyword) {
         getSearch(postKeyword);
@@ -912,11 +917,14 @@ function Social() {
   }, [renderCount, postKeyword, sort]);
 
   useEffect(() => {
-    socket.current = io.connect("https://hazlin.work/", {
-      extraHeaders: {
-        Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
-      },
-    });
+    if (localStorage.jwtToken) {
+      socket.current = io.connect("https://hazlin.work/", {
+        extraHeaders: {
+          Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+        },
+      });
+    }
+
     // message from server
     // socket.current.on("liked", (msg) => {
     //   console.log("msg: ", msg);
@@ -932,10 +940,10 @@ function Social() {
       {postData && (
         <>
           {/* 動畫模式 */}
-          <AnimateDiv mode={mode}>
+          <AnimateDiv $mode={mode}>
             <AnimateWrapper>
-              {postData.list.slice(0, 13).map((i) => {
-                return <AnimateImg src={i.postPic}></AnimateImg>;
+              {postData.list.slice(0, 13).map((i, index) => {
+                return <AnimateImg key={index} src={i.postPic}></AnimateImg>;
               })}
             </AnimateWrapper>
           </AnimateDiv>
@@ -961,16 +969,11 @@ function Social() {
                   placeholder="搜尋貼文"
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
-                      if (postKeyword === null || postKeyword == "") {
-                        navigate(sort ? `?sort=time` : `?sort=hearts`);
-                      } else {
-                        navigate(
-                          sort
-                            ? `?postKeyword=${inputValue}&sort=time`
-                            : `?postKeyword=${inputValue}&sort=hearts`
-                        );
-                      }
-
+                      navigate(
+                        sort
+                          ? `?postKeyword=${inputValue}&sort=time`
+                          : `?postKeyword=${inputValue}&sort=hearts`
+                      );
                       getSearch(inputValue);
                     }
                   }}
@@ -1007,92 +1010,91 @@ function Social() {
               <PostWrapper>
                 {postData.list.map((i, index) => {
                   return (
-                    <>
-                      <Post>
-                        {/* 手機版 */}
-                        <MobileUserDiv>
-                          <MobileUserImage src={i.user_picture} />
-                          <MobileUserText>{i.uname}</MobileUserText>
-                        </MobileUserDiv>
+                    <Post key={i.postId}>
+                      {/* 手機版 */}
+                      <MobileUserDiv>
+                        <MobileUserImage src={i.user_picture} />
+                        <MobileUserText>{i.uname}</MobileUserText>
+                      </MobileUserDiv>
 
-                        <PostImage
-                          src={i.postPic}
+                      <PostImage
+                        src={i.postPic}
+                        onClick={() => {
+                          if (window.innerWidth > 412) {
+                            console.log("click");
+                            setIsActive(true);
+                            setActivePostPicIndex(index);
+                          }
+                        }}
+                      />
+                      {/* 收機版 */}
+                      <MobileTagDiv
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <MobileProductNameDiv>
+                          {i.products.map((i) => (
+                            <MobileProductName
+                              key={i.pid}
+                              onClick={() => {
+                                navigate(`../products/${i.pid}`);
+                              }}
+                            >
+                              {i.pName}
+                            </MobileProductName>
+                          ))}
+                        </MobileProductNameDiv>
+                        <MobileTagNameDiv>
+                          {i.tags.map((i, index) => (
+                            <MobileTagName key={index}>{i}</MobileTagName>
+                          ))}
+                        </MobileTagNameDiv>
+                      </MobileTagDiv>
+
+                      <PostIconWrapper
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        <PostHeartIcon
+                          uid={userId}
+                          hearters={i.hearters}
                           onClick={() => {
-                            if (window.innerWidth > 412) {
-                              console.log("click");
-                              setIsActive(true);
-                              setActivePostPicIndex(index);
+                            postHeart(i.postId);
+                            if (!i.hearters.includes(userId)) {
+                              console.log("socket click heart!");
+                              socket.current.emit("like", {
+                                post_id: i.postId,
+                                hearted_user_id: i.uid,
+                              });
                             }
                           }}
-                        />
-                        {/* 收機版 */}
-                        <MobileTagDiv
-                          onClick={(e) => {
-                            e.stopPropagation();
+                        ></PostHeartIcon>
+                        <PostIconNumber>{i.hearts}</PostIconNumber>
+                        <PostFollowIcon
+                          uid={userId}
+                          followers={i.followers}
+                          onClick={() => {
+                            postFollow(i.postId, i.uid);
+                            if (!i.followers.includes(userId)) {
+                              console.log("socket follow");
+                              socket.current.emit("follow", {
+                                followed_id: i.uid,
+                              });
+                            }
                           }}
-                        >
-                          <MobileProductNameDiv>
-                            {i.products.map((i) => (
-                              <MobileProductName
-                                onClick={() => {
-                                  navigate(`../products/${i.pid}`);
-                                }}
-                              >
-                                {i.pName}
-                              </MobileProductName>
-                            ))}
-                          </MobileProductNameDiv>
-                          <MobileTagNameDiv>
-                            {i.tags.map((i) => (
-                              <MobileTagName>{i}</MobileTagName>
-                            ))}
-                          </MobileTagNameDiv>
-                        </MobileTagDiv>
-
-                        <PostIconWrapper
-                          onClick={(e) => {
-                            e.stopPropagation();
+                        ></PostFollowIcon>
+                        <PostSaveIcon
+                          uid={userId}
+                          savers={i.savers}
+                          onClick={() => {
+                            console.log("save");
+                            postSaver(i.postId, i.uid);
                           }}
-                        >
-                          <PostHeartIcon
-                            uid={userId}
-                            hearters={i.hearters}
-                            onClick={() => {
-                              postHeart(i.postId);
-                              if (!i.hearters.includes(userId)) {
-                                console.log("socket click heart!");
-                                socket.current.emit("like", {
-                                  post_id: i.postId,
-                                  hearted_user_id: i.uid,
-                                });
-                              }
-                            }}
-                          ></PostHeartIcon>
-                          <PostIconNumber>{i.hearts}</PostIconNumber>
-                          <PostFollowIcon
-                            uid={userId}
-                            followers={i.followers}
-                            onClick={() => {
-                              postFollow(i.postId, i.uid);
-                              if (!i.followers.includes(userId)) {
-                                console.log("socket follow");
-                                socket.current.emit("follow", {
-                                  followed_id: i.uid,
-                                });
-                              }
-                            }}
-                          ></PostFollowIcon>
-                          <PostSaveIcon
-                            uid={userId}
-                            savers={i.savers}
-                            onClick={() => {
-                              console.log("save");
-                              postSaver(i.postId, i.uid);
-                            }}
-                          ></PostSaveIcon>
-                        </PostIconWrapper>
-                      </Post>
-                    </>
+                        ></PostSaveIcon>
+                      </PostIconWrapper>
+                    </Post>
                   );
                 })}
                 {/* pop up */}
@@ -1179,6 +1181,7 @@ function Social() {
                     <ProductNameDiv>
                       {postData.list[activePostPicIndex]?.products.map((i) => (
                         <ProductName
+                          key={i.pid}
                           onClick={() => {
                             navigate(`../products/${i.pid}`);
                           }}
@@ -1188,9 +1191,11 @@ function Social() {
                       ))}
                     </ProductNameDiv>
                     <TagNameDiv>
-                      {postData.list[activePostPicIndex]?.tags.map((i) => (
-                        <TagName>{i}</TagName>
-                      ))}
+                      {postData.list[activePostPicIndex]?.tags.map(
+                        (i, index) => (
+                          <TagName key={index}>{i}</TagName>
+                        )
+                      )}
                     </TagNameDiv>
                   </TagDiv>
                 </ActivePost>
