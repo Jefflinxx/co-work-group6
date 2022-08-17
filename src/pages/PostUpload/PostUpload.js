@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import Camera from './Camera.png'
 import Local from './Upload File.png'
+import heart from './heart.png'
+import saveActive from './save-active.png'
 import Webcam from 'react-webcam'
 import styled from 'styled-components'
 
@@ -10,6 +12,11 @@ const Wrapper = styled.div`
 `
 const Divide = styled.div`
   display: flex;
+`
+const TagDivide = styled(Divide)`
+  align-items: center;
+  margin-top: 20px;
+  width: 80%;
 `
 const DeleteDivide = styled(Divide)`
   align-items: center;
@@ -87,6 +94,15 @@ const Label = styled.label`
   color: black;
   background-color: #edc187;
 `
+const TagLabel = styled.label`
+  font-size: 20px;
+  position: relative;
+  width: 80%;
+`
+const FindProductTag = styled.div`
+  font-size: 18px;
+  margin-bottom: 12px;
+`
 const PutTag = styled.input`
   font-size: 20px;
   line-height: 20px;
@@ -95,10 +111,10 @@ const PutTag = styled.input`
   border-radius: 8px;
   height: 60px;
   padding: 20px;
-  width: 100%;
 `
 const ShowTag = styled.div`
   position: relative;
+  width: 90%;
 `
 const TagBtn = styled.div`
   position: absolute;
@@ -131,10 +147,34 @@ const UploadBtn = styled.div`
     color: white;
   }
 `
+const FindBtn = styled.button`
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 80%;
+  text-align: center;
+  padding: 12px;
+  background-color: transparent;
+`
+const FindPostBtn = styled(FindBtn)`
+  width: 100%;
+  font-size: 20px;
+  margin: 0 auto;
+  border: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`
 const Note = styled.span`
   font-size: 14px;
   color: red;
   margin-bottom: 12px;
+`
+const IDnote = styled(Note)`
+  font-size: 12px;
+  color: gray;
+  margin-top: 6px;
 `
 const SelectTag = styled.select`
   width: 95%;
@@ -149,18 +189,22 @@ const SelectTag = styled.select`
     width: 100%;
   }
 `
-// const ClickedTag = styled.div`
-//   text-align: center;
-//   font-size: 20px;
-//   line-height: 20px;
-//   padding: 10px;
-//   width: 95%;
-//   margin-top: 20px;
-//   ${'' /* background-color: rgba(0, 0, 0, 0.2); */}
-//   height: 40px;
-//   border: 1px solid rgba(0, 0, 0, 0.2);
-//   border-radius: 8px;
-// `
+const ClickedTag = styled.input`
+  ${'' /* display:none; */}
+  ${'' /* position:absolute; */}
+  ${'' /* &::after{
+    content:''; */}
+    width:16px;
+    height:16px;
+    border:1px solid black;
+  ${'' /* } */}
+
+  ${'' /* background-color: rgba(0, 0, 0, 0.2); */}
+  ${'' /* border: 1px solid rgba(0, 0, 0, 0.2); */}
+  ${'' /* border-radius: 8px; */}
+
+  cursor: pointer;
+`
 const ShowTagList = styled(ShowTag)`
   margin-top: 12px;
   font-size: 24px;
@@ -198,6 +242,7 @@ const videoConstraints = {
 }
 
 const WebImg = styled.img`
+  display: block;
   position: absolute;
   top: 500px;
 `
@@ -210,22 +255,96 @@ const HoverNote = styled.div`
   margin-bottom: 8px;
   font-size: 14px;
 `
+const PostWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  @media screen and (max-width: 1200px) {
+    justify-content: space-around;
+  }
+`
+const Post = styled.div`
+  width: 360px;
+  height: 530px;
+  border-radius: 40px;
+  overflow: hidden;
+  background: #34393c;
+  margin-bottom: 80px;
+  @media screen and (max-width: 1279px) {
+    height: auto;
+  }
+  @media screen and (max-width: 412px) {
+    width: 100%;
+    height: auto;
+    border-radius: 0px;
+    margin-bottom: 0px;
+  }
+`
+const PostImage = styled.img`
+  width: 360px;
+  height: 480px;
+  object-fit: cover;
+  @media screen and (max-width: 1199px) {
+    width: 100%;
+    height: auto;
+  }
+`
+const PostIconWrapper = styled.div`
+  width: 360px;
+  height: 50px;
+  display: flex;
+  position: relative;
+  background: #34393c;
+  @media screen and (max-width: 412px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+`
+const PostHeartIcon = styled.div`
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(${heart});
+  background-size: 40px 34px;
+  margin-left: 20px;
+  @media screen and (max-width: 412px) {
+    margin-left: 10px;
+  }
+`
+const PostIconNumber = styled.div`
+  position: absolute;
+  top: 21px;
+  left: 64px;
+  font-size: 18px;
+  color: #f5f5f5f5;
+  text-align: center;
+  @media screen and (max-width: 412px) {
+    left: 54px;
+  }
+`
+
 function PostUpload() {
   const [images, setImages] = useState([])
   const [imageURLs, setImageURLs] = useState([])
-  const [pastProduct, setPastProduct] = useState([])
-  const [savedTag, setSavedTag] = useState([])
+  const [pastProduct, setPastProduct] = useState()
+  const [savedTag, setSavedTag] = useState(false)
+  const [chooseTag, setChooseTag] = useState()
   const [cameraImg, setCameraImg] = useState(null)
   const [capturing, setCapturing] = useState(false)
+  const [isActive, setIsActive] = useState(false)
   const [local, setLocal] = useState(true)
   const [camera, setCamera] = useState(false)
   const [isHover, setIsHover] = useState(true)
   const [isHoverCamera, setIsHoverCamera] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const webcamRef = useRef(null)
   const uploadCamera = useRef(null)
   const [uploadCameraImage, setUploadCameraImage] = useState(null)
   const customizedTag = useRef()
   const [savedCustomizedTag, setSavedCustomizedTag] = useState([])
+  const [pastPosts, setPastPosts] = useState()
   function onImageChange(e) {
     setImages([...e.target.files])
     console.log(e.target.files[0])
@@ -258,11 +377,8 @@ function PostUpload() {
     }
   }
 
-  const list = [
-    { pid: 201902191247, pName: '經典修身長筒牛仔褲' },
-    { pid: 201902191245, pName: '小扇紋質感上衣' },
-  ]
-
+  let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
+  let uploadTokenInfo = uploadToken.token
   // // 儲存按過的select
   async function showProductTag() {
     const response = await fetch(`https://hazlin.work/api/1.0/orders`, {
@@ -270,33 +386,32 @@ function PostUpload() {
         Authorization: `Bearer ${uploadTokenInfo}`,
       }),
     })
-    console.log(await response.json())
-    let buyLists = await response.json()
-    let buyList = await buyLists.list
-    console.log(buyList)
-
-    // if (buyList.length > 0) {
-    //   setPastProduct(buyList)
-    // }
-
-    // if()
-    // let savedTag = []
-    // let currentTag = productTag.current.value
-    // console.log(productTag.current.value)
-    // savedTag.push(currentTag)
-    // setSavedTag([productTag.current.value, ...savedTag])
-    // console.log(savedTag)
+    if (response.status === 200) {
+      // console.log(await response.json())
+      const productList = await response.json()
+      setPastProduct(productList)
+    } else if ((await response.json().list) <= 0) {
+      alert('須購買商品才可上傳您的時尚')
+    }
   }
 
-  let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
-  let uploadTokenInfo = uploadToken.token
+  function chooseProductTag(e) {
+    console.log(e.target.value)
+    if (savedTag === false) {
+      setSavedTag(true)
+      setChooseTag([e.target.value])
+    } else {
+      setSavedTag(false)
+    }
+  }
+
   async function uploadFile() {
-    // if()
     const base64Data = cameraImg
+    console.log(base64Data)
     const base64DataResponse = await fetch(`${base64Data}`)
     const cameraBlob = await base64DataResponse.blob()
-    console.log(cameraBlob)
-    if (!base64DataResponse || !currImage) {
+    setUploadCameraImage(cameraBlob)
+    if (!base64Data && currImage === undefined) {
       alert('圖片不可為空')
     } else {
       var myHeaders = new Headers()
@@ -304,7 +419,7 @@ function PostUpload() {
       var formdata = new FormData()
       formdata.append('upload_files', currImage)
       formdata.append('tags', JSON.stringify(savedCustomizedTag))
-      // formdata.append('camera_image', cameraBlob)
+      formdata.append('camera_image', cameraBlob)
       formdata.append(
         'products',
         '[{"pid":201902191247,"pName":"經典修身長筒牛仔褲"},{"pid":201902191245,"pName":"小扇紋質感上衣"}]',
@@ -325,16 +440,29 @@ function PostUpload() {
         .catch((err) => console.log('err', err))
     }
   }
-  const capture = () => {
-    const cameraImg = webcamRef.current.getScreenshot({
-      width: 1920,
-      height: 1080,
+
+  async function showMyPastPost() {
+    setIsOpen((prevCheck) => !prevCheck)
+    const response = await fetch(`https://hazlin.work/api/1.0/user/post`, {
+      headers: new Headers({
+        Authorization: `Bearer ${uploadTokenInfo}`,
+      }),
     })
-    console.log(cameraImg)
+    if (response.status === 200) {
+      // console.log(await response.json())
+      const pastPostList = await response.json()
+      setPastPosts(pastPostList)
+    } else if ((await response.json().posts) === []) {
+      alert('您尚未帶起風潮')
+    }
+  }
+  // console.log(pastPosts)
+
+  const capture = () => {
+    const cameraImg = webcamRef.current.getScreenshot()
     setCapturing(true)
     setCameraImg(cameraImg)
   }
-
   function deletecapture() {
     setCameraImg(null)
   }
@@ -424,24 +552,26 @@ function PostUpload() {
             <UploadProduct>
               <Label>圖片所包含商品</Label>
               <Note>*必填</Note>
-              <ShowTag onClick={showProductTag}>請選擇圖片所含商品</ShowTag>
-              {pastProduct !== [] ? (
-                pastProduct.map((list, key) => {
+              <FindProductTag>查找歷史購買產品</FindProductTag>
+              <FindBtn onClick={showProductTag}>點選查找</FindBtn>
+              {pastProduct &&
+                pastProduct.list.map((list, key) => {
                   return (
                     <>
-                      <option
-                        key={key}
-                        value={list}
-                        // onChange={showProductTag}
-                      >
-                        {list}
-                      </option>
+                      <TagDivide>
+                        <ClickedTag
+                          type="checkbox"
+                          key={key}
+                          value={list.ptitle}
+                          onClick={chooseProductTag}
+                          checked={savedTag}
+                        />
+                        <TagLabel name={list.ptitle}>{list.ptitle}</TagLabel>
+                      </TagDivide>
+                      <IDnote>productID：{list.product_id}</IDnote>
                     </>
                   )
-                })
-              ) : (
-                <Note>您尚未買過任何商品</Note>
-              )}
+                })}
             </UploadProduct>
             <CustomisedTag>
               <Label>加入商品名稱TAG</Label>
@@ -465,6 +595,31 @@ function PostUpload() {
           </UploadWayTag>
         </Divide>
         <UploadBtn onClick={uploadFile}>送出貼文</UploadBtn>
+        <Title>我的潮流貼文</Title>
+        <FindPostBtn onClick={showMyPastPost}>點選查看過往風流</FindPostBtn>
+        <PostWrapper>
+          {pastPosts
+            ? pastPosts[0].posts.map((item, id) => {
+                return (
+                  <Post key={id}>
+                    <PostImage
+                      src={item.postPic}
+                      onClick={() => {
+                        if (window.innerWidth > 412) {
+                          console.log('click')
+                          setIsActive(true)
+                        }
+                      }}
+                    />
+                    <PostIconWrapper>
+                      <PostHeartIcon></PostHeartIcon>
+                      <PostIconNumber>{item.hearts}</PostIconNumber>
+                    </PostIconWrapper>
+                  </Post>
+                )
+              })
+            : null}
+        </PostWrapper>
       </Wrapper>
     </>
   )

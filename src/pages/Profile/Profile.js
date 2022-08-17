@@ -1,17 +1,17 @@
-import { useEffect, useState, useRef } from "react";
-import styled from "styled-components";
-import main from "./main.png";
-import facebook from "./facebook.png";
-import Person from "./Person.png";
-import Mail from "./Mail.png";
-import Password from "./Password.png";
-import LogoPic from "./logo.png";
-import Popup from "reactjs-popup";
-import Member from "../Member/Member";
+import { useEffect, useState, useRef } from 'react'
+import styled from 'styled-components'
+import main from './main.png'
+import facebook from './facebook.png'
+import Person from './Person.png'
+import Mail from './Mail.png'
+import Password from './Password.png'
+import LogoPic from './logo.png'
+import Popup from 'reactjs-popup'
+import Member from '../Member/Member'
 
-import api from "../../utils/api";
-import getJwtToken from "../../utils/getJwtToken";
-import fb from "../../utils/fb";
+import api from '../../utils/api'
+import getJwtToken from '../../utils/getJwtToken'
+import fb from '../../utils/fb'
 
 const Wrapper = styled.div`
   padding: 60px 20px;
@@ -22,57 +22,57 @@ const Wrapper = styled.div`
 
   margin: 0 auto;
   max-width: 1160px;
-`;
+`
 const MemberWrapper = styled.div`
   padding: 60px 20px;
   margin: 0 auto;
   max-width: 1160px;
-`;
+`
 const Divide = styled.div`
   display: flex;
   justify-content: space-between;
-`;
+`
 const MemberDivide = styled(Divide)`
   margin: 0 auto;
   max-width: 1160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
+`
 const PhotoDivide = styled(Divide)`
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 24px;
-`;
+`
 const Title = styled.div`
   margin-bottom: 32px;
   font-size: 36px;
   font-weight: bold;
-`;
+`
 const Text = styled.p`
   font-size: 14px;
   line-height: 20px;
   letter-space: 2px;
-`;
+`
 const MainLogin = styled.div`
   border: 1px solid #3f3a3a;
   width: 600px;
   height: auto;
   padding: 30px;
   box-shadow: 5px 5px 1px rgba(0, 0, 0, 0.2);
-`;
+`
 const HotImage = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
-`;
+`
 const HotImageList = styled.img`
   width: calc(33% - 12px);
   aspect-ratio: 0.6/1;
   background-image: url(${main});
   background-size: cover;
-`;
+`
 const SubTitle = styled(Title)`
   font-size: 24px;
   font-weight: normal;
@@ -80,7 +80,7 @@ const SubTitle = styled(Title)`
   justify-content: space-between;
   align-items: center;
   &::before {
-    content: "";
+    content: '';
     width: 30%;
     left: 0;
     right: 0;
@@ -88,14 +88,14 @@ const SubTitle = styled(Title)`
     background-color: #3f3a3a;
   }
   &::after {
-    content: "";
+    content: '';
     width: 30%;
     left: 0;
     right: 0;
     height: 1px;
     background-color: #3f3a3a;
   }
-`;
+`
 const Btn = styled.button`
   width: 250px;
   brder-radius: 3px;
@@ -113,7 +113,7 @@ const Btn = styled.button`
   background-image: url(${facebook});
   background-repeat: no-repeat;
   background-position: 10px center;
-`;
+`
 const BtnMember = styled(Btn)`
   background-color: white;
   color: #3f3a3a;
@@ -132,7 +132,7 @@ const BtnMember = styled(Btn)`
     color: white;
     border: 1px solid #8b572a;
   }
-`;
+`
 const CloseBtn = styled.button`
   position: absolute;
   top: 0;
@@ -149,19 +149,19 @@ const CloseBtn = styled.button`
     background-color: black;
     color: white;
   }
-`;
+`
 const CheckOutBtn = styled.div`
   font-size: 18px;
   cursor: pointer;
   &:hover {
     text-decoration: underline;
   }
-`;
+`
 const MemberText = styled.div`
   font-size: 20px;
-`;
+`
 const BackOver = styled.div`
-  ${"" /* display: none; */}
+  ${'' /* display: none; */}
   position: fixed;
   top: 0;
   left: 0;
@@ -171,7 +171,7 @@ const BackOver = styled.div`
 
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 5;
-`;
+`
 const Modal = styled.div`
   position: fixed;
   left: 50%;
@@ -179,14 +179,14 @@ const Modal = styled.div`
   top: 10vh;
   z-index: 11;
   min-height: 100vh;
-`;
+`
 const LoginForm = styled.div`
   position: relative;
 
   background-color: white;
   padding: 30px;
   text-align: left;
-`;
+`
 const Logo = styled.div`
   margin: 0 auto;
   margin-bottom: 36px;
@@ -195,12 +195,12 @@ const Logo = styled.div`
   width: 260px;
   height: 48px;
   background-size: cover;
-`;
+`
 const AccountLabel = styled.label`
   font-size: 16px;
   margin-bottom: 8px;
   text-align: left;
-`;
+`
 const AccountInput = styled.input`
   width: 100%;
   padding: 12px 40px;
@@ -216,19 +216,19 @@ const AccountInput = styled.input`
   background-size: 20px;
 
   margin-bottom: 24px;
-`;
+`
 const PasswordInput = styled(AccountInput)`
   background-image: url(${Password});
-`;
+`
 const EmailInput = styled(AccountInput)`
   background-image: url(${Mail});
-`;
+`
 const BecomeMember = styled(BtnMember)`
   width: 100%;
   margin: 0 auto;
   margin-top: 24px;
-`;
-const SuccessLogin = styled(BecomeMember)``;
+`
+const SuccessLogin = styled(BecomeMember)``
 const NotMemberText = styled.div`
   font-size: 12px;
   margin-top: 12px;
@@ -236,53 +236,53 @@ const NotMemberText = styled.div`
     cursor: pointer;
     opacity: 40%;
   }
-`;
+`
 const Tag = styled.input`
   font-size: 24px;
   margin: 20px 45px;
-`;
+`
 const UploadPic = styled.div`
   margin-top: 20px;
   width: 180px;
   height: 180px;
   background-color: #d9d9d9;
   border-radius: 50%;
-`;
+`
 const UploadPhoto = styled.img`
   width: 180px;
   aspect-ratio: 1/1;
   background-color: #d9d9d9;
   border-radius: 50%;
   object-fit: cover;
-`;
+`
 
 function Profile() {
-  const [fbprofile, setfbProfile] = useState();
-  const [registerToken, setregisterToken] = useState(false);
-  const [checkinToken, setcheckinToken] = useState(false);
-  const [images, setImages] = useState([]);
-  const [imageURLs, setImageURLs] = useState([]);
-  const accountRef = useRef();
-  const passwordRef = useRef();
-  const emailRef = useRef();
-  const checkinAccount = useRef();
-  const checkinPassword = useRef();
-  const currImage = images[0];
-  console.log(currImage);
+  const [fbprofile, setfbProfile] = useState()
+  const [registerToken, setregisterToken] = useState(false)
+  const [checkinToken, setcheckinToken] = useState(false)
+  const [images, setImages] = useState([])
+  const [imageURLs, setImageURLs] = useState([])
+  const accountRef = useRef()
+  const passwordRef = useRef()
+  const emailRef = useRef()
+  const checkinAccount = useRef()
+  const checkinPassword = useRef()
+  const currImage = images[0]
+  console.log(currImage)
 
-  let jwtToken = window.localStorage.getItem("jwtToken");
+  let jwtToken = window.localStorage.getItem('jwtToken')
   async function getProfile() {
     if (!jwtToken) {
       try {
-        jwtToken = await getJwtToken();
+        jwtToken = await getJwtToken()
       } catch (e) {
-        window.alert(e.message);
-        return;
+        window.alert(e.message)
+        return
       }
     }
-    window.localStorage.setItem("jwtToken", jwtToken);
-    const { data } = await api.getProfile(jwtToken);
-    setfbProfile(data);
+    window.localStorage.setItem('jwtToken', jwtToken)
+    const { data } = await api.getProfile(jwtToken)
+    setfbProfile(data)
   }
 
   const registerProcess = async () => {
@@ -293,145 +293,154 @@ function Profile() {
         !emailRef.current.value ||
         images.length < 1
       ) {
-        alert("表格不可為空");
-        setregisterToken(false);
+        alert('表格不可為空')
+        setregisterToken(false)
       } else {
-        var formdata = new FormData();
-        formdata.append("signup_upload_files", currImage);
-        formdata.append("name", accountRef.current.value);
-        formdata.append("email", emailRef.current.value);
-        formdata.append("password", passwordRef.current.value);
+        var formdata = new FormData()
+        formdata.append('signup_upload_files', currImage)
+        formdata.append('name', accountRef.current.value)
+        formdata.append('email', emailRef.current.value)
+        formdata.append('password', passwordRef.current.value)
         const response = await fetch(
           `https://hazlin.work/api/1.0/user/signup`,
           {
             body: formdata,
-            method: "POST",
-          }
-        );
+            method: 'POST',
+          },
+        )
+        console.log(response)
+        // if (true) {
+        //   console.log('aaa')
+        //   console.log(response.status)
+        // }
         if (response.status === 200) {
-          alert("註冊成功");
-          accountRef.current.value = "";
-          passwordRef.current.value = "";
-          emailRef.current.value = "";
+          alert('註冊成功')
+          accountRef.current.value = ''
+          passwordRef.current.value = ''
+          emailRef.current.value = ''
           // console.log(await response.json())
         } else if (response.status === 403) {
-          alert("email重複註冊");
+          alert('email重複註冊')
+        } else if (response.status === 413) {
+          alert('照片檔案有誤')
+        } else {
+          console.log('照片錯了')
         }
         // console.log(await response.json())
-        return await response.json();
+        return await response.json()
       }
-    };
+    }
 
     async function setUserInfo() {
-      let resJSON = await register();
-      let resUserInfo = await resJSON.data;
-      let registerName = await resUserInfo.user.name;
-      let resUserToken = await resUserInfo.access_token;
-      let registerEmail = await resUserInfo.user.email;
-      let registerPhoto = await resUserInfo.picture;
+      let resJSON = await register()
+      let resUserInfo = await resJSON.data
+      let registerName = await resUserInfo.user.name
+      let resUserToken = await resUserInfo.access_token
+      let registerEmail = await resUserInfo.user.email
+      let registerPhoto = await resUserInfo.picture
       let UserInfo = {
         name: registerName,
         token: resUserToken,
         email: registerEmail,
         photo: registerPhoto,
-      };
-      console.log(UserInfo);
-      window.localStorage.setItem("registerToken", JSON.stringify(UserInfo));
+      }
+      console.log(UserInfo)
+      window.localStorage.setItem('registerToken', JSON.stringify(UserInfo))
     }
-    setUserInfo();
-    console.log(123);
-    if (window.localStorage.getItem("registerToken") !== []) {
-      setregisterToken(true);
+    setUserInfo()
+    console.log(123)
+    if (window.localStorage.getItem('registerToken') !== []) {
+      setregisterToken(true)
     }
-  };
+  }
 
   const checkInProcess = () => {
     const checkIn = async () => {
       if (!checkinAccount.current.value || !checkinPassword.current.value) {
-        alert("表格不能為空");
+        alert('表格不能為空')
       } else {
         let checkinData = {
-          provider: "native",
+          provider: 'native',
           email: checkinAccount.current.value,
           password: checkinPassword.current.value,
-        };
+        }
         const response = await fetch(
-          "https://hazlin.work/api/1.0/user/signin",
+          'https://hazlin.work/api/1.0/user/signin',
           {
             body: JSON.stringify(checkinData),
             headers: new Headers({
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             }),
-            method: "POST",
-          }
-        );
+            method: 'POST',
+          },
+        )
         if (response.status === 200) {
-          alert("成功登入");
+          alert('成功登入')
         } else if (response.status === 403) {
-          alert("Email或帳號有誤");
+          alert('Email或帳號有誤')
         }
-        return await response.json();
+        return await response.json()
       }
-    };
+    }
     async function setUserInfo() {
-      let resJSON = await checkIn();
-      let resCheckInfo = await resJSON.data;
-      let resCheckName = await resCheckInfo.user.name;
-      let resCheckEmail = await resCheckInfo.user.email;
-      let resCheckToken = await resCheckInfo.access_token;
+      let resJSON = await checkIn()
+      let resCheckInfo = await resJSON.data
+      let resCheckName = await resCheckInfo.user.name
+      let resCheckEmail = await resCheckInfo.user.email
+      let resCheckToken = await resCheckInfo.access_token
       let setcheckInInfo = {
         token: resCheckToken,
         name: resCheckName,
         email: resCheckEmail,
-      };
-      window.localStorage.setItem("jwtToken", JSON.stringify(setcheckInInfo));
+      }
+      window.localStorage.setItem('jwtToken', JSON.stringify(setcheckInInfo))
     }
-    setUserInfo();
-    if (window.localStorage.getItem("jwtToken") !== []) {
-      setcheckinToken(true);
+    setUserInfo()
+    if (window.localStorage.getItem('jwtToken') !== []) {
+      setcheckinToken(true)
     }
-  };
+  }
 
   function directToMember() {
     if (!registerToken) {
-      console.log("尚未有會員資料");
+      console.log('尚未有會員資料')
       // alert('尚未有會員資料')
     }
-    let directInfo = JSON.parse(window.localStorage.getItem("registerToken"));
+    let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
     let registernData = {
-      provider: "native",
+      provider: 'native',
       name: directInfo.name,
       email: directInfo.email,
       password: directInfo.name,
       token: directInfo.token,
-    };
-    window.localStorage.removeItem("registerToken");
-    window.localStorage.setItem("jwtToken", JSON.stringify(registernData));
+    }
+    window.localStorage.removeItem('registerToken')
+    window.localStorage.setItem('jwtToken', JSON.stringify(registernData))
 
-    setcheckinToken(true);
+    setcheckinToken(true)
   }
 
-  const LoginName = JSON.parse(window.localStorage.getItem("jwtToken"));
+  const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
   useEffect(() => {
     if (LoginName !== null) {
       // setLoginNameInfo(LoginNameInfo)
-      setcheckinToken(true);
+      setcheckinToken(true)
     }
-  }, [LoginName]);
+  }, [LoginName])
 
   useEffect(() => {
-    if (images.length < 1) return;
-    const newImageUrls = [];
-    images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)));
-    setImageURLs(newImageUrls);
-  }, [images]);
+    if (images.length < 1) return
+    const newImageUrls = []
+    images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)))
+    setImageURLs(newImageUrls)
+  }, [images])
 
   function getPhotoInfo(e) {
-    setImages([...e.target.files]);
-    console.log(e.target.files[0]);
+    setImages([...e.target.files])
+    console.log(e.target.files[0])
   }
 
-  console.log(checkinToken);
+  console.log(checkinToken)
 
   return (
     <>
@@ -458,7 +467,7 @@ function Profile() {
                             <Logo />
                             <CloseBtn
                               onClick={() => {
-                                close();
+                                close()
                               }}
                             >
                               x
@@ -479,7 +488,7 @@ function Profile() {
                           <AccountLabel type="label">會員照片</AccountLabel>
                           <PhotoDivide>
                             <UploadPic>
-                              {" "}
+                              {' '}
                               {imageURLs.map((imageSrc, index) => (
                                 <UploadPhoto
                                   key={index}
@@ -520,7 +529,7 @@ function Profile() {
                             <Logo />
                             <CloseBtn
                               onClick={() => {
-                                close();
+                                close()
                               }}
                             >
                               x
@@ -564,9 +573,9 @@ function Profile() {
               </MemberText>
               <CheckOutBtn
                 onClick={() => {
-                  window.localStorage.removeItem("jwtToken");
-                  alert("成功登出");
-                  setfbProfile();
+                  window.localStorage.removeItem('jwtToken')
+                  alert('成功登出')
+                  setfbProfile()
                 }}
               >
                 登出
@@ -585,10 +594,10 @@ function Profile() {
               </MemberText>
               <CheckOutBtn
                 onClick={() => {
-                  window.localStorage.removeItem("jwtToken");
-                  alert("成功登出");
-                  setcheckinToken(false);
-                  setregisterToken(false);
+                  window.localStorage.removeItem('jwtToken')
+                  alert('成功登出')
+                  setcheckinToken(false)
+                  setregisterToken(false)
                 }}
               >
                 登出
@@ -599,7 +608,7 @@ function Profile() {
         </>
       )}
     </>
-  );
+  )
 }
 
-export default Profile;
+export default Profile

@@ -22,7 +22,7 @@ const api = {
     return await response.json()
   },
   async checkout(data, jwtToken) {
-    const response = await fetch(`${this.hostname}/order/checkout`, {
+    const response = await fetch(`${this.cowork}/order/checkout`, {
       body: JSON.stringify(data),
       headers: new Headers({
         'Content-Type': 'application/json',
