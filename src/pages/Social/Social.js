@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
+import { keyframes } from "styled-components";
 import { io } from "socket.io-client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import imagetest from "./imagetest.png";
 import heart from "./heart.png";
@@ -60,7 +61,7 @@ const BallIcon = styled.div`
   height: 40px;
   position: absolute;
   top: -1px;
-  left: 0px;
+  right: 0px;
 
   background-position: center;
   background-repeat: no-repeat;
@@ -73,7 +74,7 @@ const RectangleIcon = styled.div`
   top: -1px;
   width: 50px;
   height: 40px;
-  right: 0px;
+  left: 0px;
 
   background-position: center;
   background-repeat: no-repeat;
@@ -184,7 +185,7 @@ const SortHeartIcon = styled.div`
   height: 40px;
   position: absolute;
   top: 0px;
-  left: 6px;
+  left: 50px;
 
   background-position: center;
   background-repeat: no-repeat;
@@ -199,7 +200,7 @@ const SortTimeIcon = styled.div`
   height: 40px;
   position: absolute;
   top: 0px;
-  left: 50px;
+  left: 6px;
 
   background-position: center;
   background-repeat: no-repeat;
@@ -506,7 +507,7 @@ const ActivePostFollowIcon = styled.div`
       : `url(${follow})`;
   }};
   background-size: ${(props) => {
-    return props.followers.includes(props.uid) ? `40px 40px` : `36px 32px`;
+    return props.followers?.includes(props.uid) ? `40px 40px` : `36px 32px`;
   }};
   @media screen and (max-width: 412px) {
     margin-left: 238px;
@@ -681,6 +682,97 @@ const MoreInfo = styled.p`
   font-size: 32px;
 `;
 
+const AnimateDiv = styled.div`
+  display: ${(props) => {
+    return props.mode ? `none` : `block`;
+  }};
+  overflow: hidden;
+`;
+
+const spin = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.6;
+    transform: translate3d(-9px, -9px, 570px);
+  }
+`;
+
+const AnimateImg = styled.img``;
+
+const AnimateWrapper = styled.div`
+  position: fixed;
+  top: 600px;
+  left: 50%;
+  z-index: 222;
+  -moz-perspective: 500px;
+  -webkit-perspective: 500px;
+  perspective: 500px;
+
+  ${AnimateImg} {
+    display: block;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 1px;
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.5);
+    animation-name: ${spin};
+    animation-duration: 16s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+  ${AnimateImg}:nth-child(1) {
+    transform: rotate(60deg) translate3d(240px, 0, 0);
+    animation-delay: 1.33333s;
+  }
+  ${AnimateImg}:nth-child(2) {
+    transform: rotate(120deg) translate3d(240px, 0, 0);
+    animation-delay: 2.66667s;
+  }
+  ${AnimateImg}:nth-child(3) {
+    transform: rotate(180deg) translate3d(240px, 0, 0);
+    animation-delay: 4s;
+  }
+  ${AnimateImg}:nth-child(4) {
+    transform: rotate(240deg) translate3d(240px, 0, 0);
+    animation-delay: 5.33333s;
+  }
+  ${AnimateImg}:nth-child(5) {
+    transform: rotate(300deg) translate3d(240px, 0, 0);
+    animation-delay: 6.66667s;
+  }
+  ${AnimateImg}:nth-child(6) {
+    transform: rotate(360deg) translate3d(240px, 0, 0);
+    animation-delay: 8s;
+  }
+  ${AnimateImg}:nth-child(7) {
+    transform: rotate(420deg) translate3d(240px, 0, 0);
+    animation-delay: 9.33333s;
+  }
+  ${AnimateImg}:nth-child(8) {
+    transform: rotate(480deg) translate3d(240px, 0, 0);
+    animation-delay: 10.66667s;
+  }
+  ${AnimateImg}:nth-child(9) {
+    transform: rotate(540deg) translate3d(240px, 0, 0);
+    animation-delay: 12s;
+  }
+  ${AnimateImg}:nth-child(10) {
+    transform: rotate(600deg) translate3d(240px, 0, 0);
+    animation-delay: 13.33333s;
+  }
+  ${AnimateImg}:nth-child(11) {
+    transform: rotate(660deg) translate3d(240px, 0, 0);
+    animation-delay: 14.66667s;
+  }
+  ${AnimateImg}:nth-child(12) {
+    transform: rotate(720deg) translate3d(240px, 0, 0);
+    animation-delay: 16s;
+  }
+`;
+
 function Social() {
   const [mode, setMode] = useState(true);
   const [sort, setSort] = useState(true);
@@ -695,27 +787,15 @@ function Social() {
   // const [activePostId, setActivePostId] = useState(null);
   const socket = useRef(null);
   let navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const postKeyword = searchParams.get("postKeyword");
 
   const getPost = async () => {
-    const response = await fetch("https://hazlin.work/api/1.0/posts", {
-      headers: {
-        Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
-      },
-    });
-
-    if (response.status === 200) {
-      console.log("getPost成功");
-    } else if (response.status === 403) {
-      alert("帳號有誤，請確實登入");
-    }
-    const a = await response.json();
-    setPostData(a);
-    setUserId(a.uid);
-  };
-
-  const getSearch = async (input) => {
     const response = await fetch(
-      `https://hazlin.work/api/1.0/posts/search?query_string=${input}`,
+      sort
+        ? "https://hazlin.work/api/1.0/posts?sorting=time"
+        : "https://hazlin.work/api/1.0/posts?sorting=hearts",
       {
         headers: {
           Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
@@ -730,6 +810,29 @@ function Social() {
     }
     const a = await response.json();
     setPostData(a);
+    setUserId(a.uid);
+  };
+
+  const getSearch = async (input) => {
+    const response = await fetch(
+      sort
+        ? `https://hazlin.work/api/1.0/posts/search?query_string=${input}&sorting=time`
+        : `https://hazlin.work/api/1.0/posts/search?query_string=${input}&sorting=hearts`,
+      {
+        headers: {
+          Authorization: ` Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      console.log("getPost成功");
+    } else if (response.status === 403) {
+      alert("帳號有誤，請確實登入");
+    }
+    const a = await response.json();
+    setPostData(a);
+    setUserId(a.uid);
   };
 
   console.log(postData);
@@ -797,12 +900,16 @@ function Social() {
     console.log(message);
     setRenderCount(renderCount + 1);
   };
-
+  console.log("postkeyword", postKeyword);
   useEffect(() => {
     if (localStorage.jwtToken) {
-      getPost();
+      if (postKeyword) {
+        getSearch(postKeyword);
+      } else {
+        getPost();
+      }
     }
-  }, [renderCount]);
+  }, [renderCount, postKeyword, sort]);
 
   useEffect(() => {
     socket.current = io.connect("https://hazlin.work/", {
@@ -825,7 +932,14 @@ function Social() {
       {postData && (
         <>
           {/* 動畫模式 */}
-          <Wrapper></Wrapper>
+          <AnimateDiv mode={mode}>
+            <AnimateWrapper>
+              {postData.list.slice(0, 13).map((i) => {
+                return <AnimateImg src={i.postPic}></AnimateImg>;
+              })}
+            </AnimateWrapper>
+          </AnimateDiv>
+
           {/* 一般模式 */}
           <Wrapper>
             <CenterWrapper>
@@ -836,8 +950,9 @@ function Social() {
                     setMode(!mode);
                   }}
                 >
-                  <BallIcon></BallIcon>
                   <RectangleIcon></RectangleIcon>
+                  <BallIcon></BallIcon>
+
                   <ChangeModeButton toggle={mode}></ChangeModeButton>
                 </ChangeModeDiv>
               </ChangeModeWrapper>
@@ -846,7 +961,16 @@ function Social() {
                   placeholder="搜尋貼文"
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
-                      navigate(`?postKeyword=${inputValue}`);
+                      if (postKeyword === null || postKeyword == "") {
+                        navigate(sort ? `?sort=time` : `?sort=hearts`);
+                      } else {
+                        navigate(
+                          sort
+                            ? `?postKeyword=${inputValue}&sort=time`
+                            : `?postKeyword=${inputValue}&sort=hearts`
+                        );
+                      }
+
                       getSearch(inputValue);
                     }
                   }}
@@ -856,6 +980,17 @@ function Social() {
                 <SortDiv
                   onClick={() => {
                     setSort(!sort);
+                    if (postKeyword === null || postKeyword == "") {
+                      navigate(sort ? `?sort=hearts` : `?sort=time`);
+                    } else {
+                      navigate(
+                        sort
+                          ? `?postKeyword=${postKeyword}&sort=hearts`
+                          : `?postKeyword=${postKeyword}&sort=time`
+                      );
+                    }
+
+                    console.log(sort);
                   }}
                 >
                   <SortHeartIcon></SortHeartIcon>
@@ -868,6 +1003,7 @@ function Social() {
                 <Split></Split>
                 <SortText>時間</SortText>
               </SortPhoneWrapper>
+
               <PostWrapper>
                 {postData.list.map((i, index) => {
                   return (
@@ -970,14 +1106,14 @@ function Social() {
                 >
                   <ActiveUserDiv>
                     <ActiveUserImage
-                      src={postData.list[activePostPicIndex].user_picture}
+                      src={postData.list[activePostPicIndex]?.user_picture}
                     />
                     <ActiveUserText>
-                      {postData.list[activePostPicIndex].uname}
+                      {postData.list[activePostPicIndex]?.uname}
                     </ActiveUserText>
                   </ActiveUserDiv>
                   <ActivePostImage
-                    src={postData.list[activePostPicIndex].postPic}
+                    src={postData.list[activePostPicIndex]?.postPic}
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log("no cancel");
@@ -990,12 +1126,12 @@ function Social() {
                   >
                     <ActivePostHeartIcon
                       uid={userId}
-                      hearters={postData.list[activePostPicIndex].hearters}
+                      hearters={postData.list[activePostPicIndex]?.hearters}
                       onClick={(e) => {
                         e.stopPropagation();
-                        postHeart(postData.list[activePostPicIndex].postId);
+                        postHeart(postData.list[activePostPicIndex]?.postId);
                         if (
-                          !postData.list[activePostPicIndex].hearters.includes(
+                          !postData.list[activePostPicIndex]?.hearters.includes(
                             userId
                           )
                         ) {
@@ -1007,16 +1143,16 @@ function Social() {
                       }}
                     ></ActivePostHeartIcon>
                     <ActivePostIconNumber>
-                      {postData.list[activePostPicIndex].hearts}
+                      {postData.list[activePostPicIndex]?.hearts}
                     </ActivePostIconNumber>
                     <ActivePostFollowIcon
                       uid={userId}
-                      followers={postData.list[activePostPicIndex].followers}
+                      followers={postData.list[activePostPicIndex]?.followers}
                       onClick={(e) => {
                         e.stopPropagation();
                         postFollow(
-                          postData.list[activePostPicIndex].postId,
-                          postData.list[activePostPicIndex].uid
+                          postData.list[activePostPicIndex]?.postId,
+                          postData.list[activePostPicIndex]?.uid
                         );
                         socket.current.emit("follow", {
                           followed_id: userId,
@@ -1024,13 +1160,13 @@ function Social() {
                       }}
                     ></ActivePostFollowIcon>
                     <ActivePostSaveIcon
-                      postId={postData.list[activePostPicIndex].postId}
-                      savers={postData.list[activePostPicIndex].savers}
+                      postId={postData.list[activePostPicIndex]?.postId}
+                      savers={postData.list[activePostPicIndex]?.savers}
                       onClick={(e) => {
                         e.stopPropagation();
                         postSaver(
-                          postData.list[activePostPicIndex].postId,
-                          postData.list[activePostPicIndex].uid
+                          postData.list[activePostPicIndex]?.postId,
+                          postData.list[activePostPicIndex]?.uid
                         );
                       }}
                     ></ActivePostSaveIcon>
@@ -1041,7 +1177,7 @@ function Social() {
                     }}
                   >
                     <ProductNameDiv>
-                      {postData.list[activePostPicIndex].products.map((i) => (
+                      {postData.list[activePostPicIndex]?.products.map((i) => (
                         <ProductName
                           onClick={() => {
                             navigate(`../products/${i.pid}`);
@@ -1052,7 +1188,7 @@ function Social() {
                       ))}
                     </ProductNameDiv>
                     <TagNameDiv>
-                      {postData.list[activePostPicIndex].tags.map((i) => (
+                      {postData.list[activePostPicIndex]?.tags.map((i) => (
                         <TagName>{i}</TagName>
                       ))}
                     </TagNameDiv>
