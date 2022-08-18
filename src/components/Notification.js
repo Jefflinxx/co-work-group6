@@ -6,10 +6,10 @@ const NotificationWrapper = styled.div`
   width: 260px;
   right: 0px;
   bottom: 100px;
-  border: 1px solid black;
+  ${"" /* z-index: 500; */}
+
   display: flex;
   flex-wrap: wrap-reverse;
-  ${"" /* justify-content: flex-end; */}
 `;
 
 const NotificationDiv = styled.div`
@@ -40,10 +40,11 @@ const NotificationDiv = styled.div`
 function Notification({ socketLike }) {
   return (
     <NotificationWrapper>
-      {socketLike.map((i) => {
+      {socketLike.map((i, index) => {
         return (
-          <NotificationDiv socketLike={socketLike} $on={i}>
-            {i.name}按了你讚
+          <NotificationDiv key={index} socketLike={socketLike} $on={i}>
+            {i.name}
+            {i.message}
           </NotificationDiv>
         );
       })}

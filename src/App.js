@@ -59,21 +59,12 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const TestButton = styled.button`
-  position: fixed;
-  right: 0px;
-  bottom: 0px;
-  width: 100px;
-  height: 60px;
-  background: #b19675e1;
-  border-radius: 10px;
-`;
-
 function App() {
   const [cartItems, setCartItems] = useState(
     JSON.parse(window.localStorage.getItem("cartItems")) || []
   );
   const [socketLike, setSocketLike] = useState([]);
+  const [render, setRender] = useState(0);
   const socket = useRef(null);
 
   function getItems() {
@@ -128,62 +119,71 @@ function App() {
       socket.current = io.connect("https://hazlin.work/", {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+          transports: ["websocket"],
         },
-        transports: ["websocket"],
       });
+
+      console.log(socket.current.id);
+
+      socket.current.on("connect", () => {
+        console.log("app socket id", socket.current.id); // "G5p5..."
+      });
+
+      socket.current.on("disconnect", () => {
+        console.log("斷線後執行重連");
+        socket.current.connect();
+      });
+
       // message from server
+      console.log("useeffect");
       socket.current.on("liked", (msg) => {
         console.log("msg: ", msg);
-        // setSocketLike((prev) => {
-        //   prev.unshift({ id: msg.fromUserId, name: msg.fromUserName });
-        //   const a = [...prev];
-        //   return a;
-        // });
-        // setTimeout(() => {
-        //   setSocketLike((prev) => {
-        //     prev.pop();
-        //     const a = [...prev];
-        //     return a;
-        //   });
-        // }, 2000);
+        setSocketLike((prev) => {
+          prev.unshift({
+            id: msg.fromUserId,
+            name: msg.fromUserName,
+            message: "點了你讚",
+          });
+          const a = [...prev];
+          return a;
+        });
+        setTimeout(() => {
+          setSocketLike((prev) => {
+            prev.pop();
+            const a = [...prev];
+            return a;
+          });
+        }, 5000);
       });
       // notification from server
       socket.current.on("followed", (msg) => {
         console.log("msg: ", msg);
+        setSocketLike((prev) => {
+          prev.unshift({
+            id: msg.fromUserId,
+            name: msg.fromUserName,
+            message: "追蹤了你",
+          });
+          const a = [...prev];
+          return a;
+        });
+        setTimeout(() => {
+          setSocketLike((prev) => {
+            prev.pop();
+            const a = [...prev];
+            return a;
+          });
+        }, 2000);
       });
     }
-  }, []);
+  }, [render]);
 
-  const testarray = [
-    { id: 1, name: "a" },
-    { id: 2, name: "b" },
-    { id: 3, name: "c" },
-    { id: 4, name: "d" },
-  ];
   return (
     <CartContext.Provider value={cart}>
       <Reset />
       <GlobalStyle />
-      <Header />
+      <Header setRender={setRender} />
       <Outlet />
-      <TestButton
-        onClick={() => {
-          setSocketLike((prev) => {
-            prev.unshift({ id: 3, name: "c" });
-            const a = [...prev];
-            return a;
-          });
-          setTimeout(() => {
-            setSocketLike((prev) => {
-              prev.pop();
-              const a = [...prev];
-              return a;
-            });
-          }, 2000);
-        }}
-      >
-        testbutton
-      </TestButton>
       <Notification socketLike={socketLike} />
       <Footer />
     </CartContext.Provider>
