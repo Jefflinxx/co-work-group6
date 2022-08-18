@@ -51,6 +51,7 @@ const UploadWay = styled(Divide)`
   flex-direction: column;
   flex-grow: 1;
   width: 15%;
+  position: relative;
 `
 const UploadWayTag = styled(UploadWay)`
   display: flex;
@@ -244,7 +245,7 @@ const videoConstraints = {
 const WebImg = styled.img`
   display: block;
   position: absolute;
-  top: 500px;
+  top: 80px;
 `
 const HoverDivide = styled(Divide)`
   flex-direction: column;
@@ -329,7 +330,7 @@ function PostUpload() {
   const [images, setImages] = useState([])
   const [imageURLs, setImageURLs] = useState([])
   const [pastProduct, setPastProduct] = useState()
-  const [savedTag, setSavedTag] = useState(false)
+  const [savedTag, setSavedTag] = useState()
   const [chooseTag, setChooseTag] = useState()
   const [cameraImg, setCameraImg] = useState(null)
   const [capturing, setCapturing] = useState(false)
@@ -340,7 +341,7 @@ function PostUpload() {
   const [isHoverCamera, setIsHoverCamera] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const webcamRef = useRef(null)
-  const uploadCamera = useRef(null)
+  // const uploadCamera = useRef(null)
   const [uploadCameraImage, setUploadCameraImage] = useState(null)
   const customizedTag = useRef()
   const [savedCustomizedTag, setSavedCustomizedTag] = useState([])
@@ -364,7 +365,6 @@ function PostUpload() {
     setSavedCustomizedTag([...savedCustomizedTag])
     console.log(savedCustomizedTag)
     customizedTag.current.value = ''
-    newTag = []
   }
   // function deleteTag(key) {
   //   // let deleteIndex
@@ -378,9 +378,12 @@ function PostUpload() {
   }
 
   let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
-  let uploadTokenInfo = uploadToken.token
+  let uploadTokenInfo
+  if (uploadToken) {
+    uploadTokenInfo = uploadToken.token
+  }
   // // 儲存按過的select
-  async function showProductTag() {
+  async function findProductTag() {
     const response = await fetch(`https://hazlin.work/api/1.0/orders`, {
       headers: new Headers({
         Authorization: `Bearer ${uploadTokenInfo}`,
@@ -390,20 +393,47 @@ function PostUpload() {
       // console.log(await response.json())
       const productList = await response.json()
       setPastProduct(productList)
-    } else if ((await response.json().list) <= 0) {
-      alert('須購買商品才可上傳您的時尚')
+      if (pastProduct.list.length === 0) {
+        console.log('沒有購買過商品')
+        alert('須購買商品才可上傳您的時尚')
+      } else {
+        alert('快來成為時尚教主吧!')
+      }
     }
   }
 
-  function chooseProductTag(e) {
+  const [checked, setChecked] = useState([])
+
+  const chooseProductTag = (e) => {
     console.log(e.target.value)
-    if (savedTag === false) {
-      setSavedTag(true)
-      setChooseTag([e.target.value])
+    let updateList = [...checked]
+
+    if (e.target.checked) {
+      updateList = [...checked, e.target.value]
     } else {
-      setSavedTag(false)
+      updateList.splice(checked.indexOf(e.target.value), 1)
     }
+    setChecked(checked)
+    console.log(checked)
   }
+
+  // function chooseProductTag(e, key) {
+  //   console.log(e.target.value)
+  //   console.log(key.value)
+  //   // if (savedTag === false) {
+  //   //   let tags=[
+  //   //     {
+  //   //       proucutId:,
+  //   //       productName:e.target.value
+  //   //     }
+  //   //   ]
+  //   //   setSavedTag(true)
+  //   //   setChooseTag([e.target.value])
+  //   //   console.log(chooseTag)
+  //   // } else {
+  //   //   setSavedTag(false)
+  //   // }
+  // }
 
   async function uploadFile() {
     const base64Data = cameraImg
@@ -436,6 +466,7 @@ function PostUpload() {
           return res.json()
         })
         .then(alert('上傳成功'))
+        .then(setSavedCustomizedTag([]))
         .then(({ data }) => console.log('data', data))
         .catch((err) => console.log('err', err))
     }
@@ -452,8 +483,12 @@ function PostUpload() {
       // console.log(await response.json())
       const pastPostList = await response.json()
       setPastPosts(pastPostList)
-    } else if ((await response.json().posts) === []) {
-      alert('您尚未帶起風潮')
+      if (pastPosts[0].posts.length === 0) {
+        window.alert('您尚未帶起風潮')
+        console.log('not yet post')
+      } else {
+        console.log(123)
+      }
     }
   }
   // console.log(pastPosts)
@@ -553,7 +588,7 @@ function PostUpload() {
               <Label>圖片所包含商品</Label>
               <Note>*必填</Note>
               <FindProductTag>查找歷史購買產品</FindProductTag>
-              <FindBtn onClick={showProductTag}>點選查找</FindBtn>
+              <FindBtn onClick={findProductTag}>點選查找</FindBtn>
               {pastProduct &&
                 pastProduct.list.map((list, key) => {
                   return (
@@ -563,8 +598,8 @@ function PostUpload() {
                           type="checkbox"
                           key={key}
                           value={list.ptitle}
-                          onClick={chooseProductTag}
-                          checked={savedTag}
+                          onChange={chooseProductTag}
+                          // checked="false"
                         />
                         <TagLabel name={list.ptitle}>{list.ptitle}</TagLabel>
                       </TagDivide>
@@ -598,7 +633,7 @@ function PostUpload() {
         <Title>我的潮流貼文</Title>
         <FindPostBtn onClick={showMyPastPost}>點選查看過往風流</FindPostBtn>
         <PostWrapper>
-          {pastPosts
+          {isOpen && pastPosts
             ? pastPosts[0].posts.map((item, id) => {
                 return (
                   <Post key={id}>

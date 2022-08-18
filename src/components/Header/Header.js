@@ -266,15 +266,14 @@ function Header() {
   const category = searchParams.get('category')
   const { getItems } = useContext(CartContext)
 
-  // const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
-  // const LoginNameInfo = LoginName.name
-  // if (LoginName) {
-  //   setLoginName(LoginNameInfo)
-  // }
+  const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
 
   useEffect(() => {
     if (category) setInputValue('')
-  }, [category])
+    if (LoginName) {
+      setLoginName(LoginName.name)
+    }
+  }, [category, LoginName])
 
   return (
     <Wrapper>
@@ -309,7 +308,7 @@ function Header() {
         </PageLink>
         <PageLink to="/profile">
           <PageLinkProfileIcon icon={profile} />
-          {/* <PageLinkText>{loginName ? loginName : '會員'}</PageLinkText>  */}
+          <PageLinkText>{loginName ? loginName : '會員'}</PageLinkText>
         </PageLink>
         <PageLink to="/social">
           <PageLinkSocialIcon icon={social} />

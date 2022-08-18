@@ -104,73 +104,47 @@ const OpenOrder = styled.div`
     color: white;
   }
 `
-
-const fakeOrder = {
-  uid: 1,
-  uname: 'Adam',
-  uemail: '123@gmail.com',
-  list: [
-    {
-      oid: 4996,
-      ptitle: '經典修身長筒牛仔褲',
-      time: '2022-08-12 02:25',
-      price: 699,
-      color: '白',
-      size: 'XL',
-      qty: 10,
-      total: 6990,
-    },
-    {
-      oid: 4997,
-      ptitle: '小扇紋質感上衣',
-      time: '2022-08-13 03:10',
-      price: 499,
-      color: '黑',
-      size: 'L',
-      qty: 10,
-      total: 4990,
-    },
-    {
-      oid: 4998,
-      ptitle: '透肌澎澎薄紗襯衫',
-      time: '2022-08-14 06:10',
-      price: 599,
-      color: '黃',
-      size: 'M',
-      qty: 10,
-      total: 5990,
-    },
-  ],
-}
-
+const Note = styled.div`
+  margin-top: 20px;
+  font-size: 24px;
+  color: red;
+`
 function Member() {
   const [isOpen, setIsOpen] = useState(false)
   const [tabIndex, setTabIndex] = useState(0)
   const [isActive, setIsActive] = useState(false)
   const [isClick, setIsClick] = useState(false)
   const [orderIsOpen, setOrderIsopen] = useState(false)
+  const [getUserProfile, setGetUserProfile] = useState(
+    JSON.parse(window.localStorage.getItem('jwtToken')) || [],
+  )
   const [currentPage, setCurrentPage] = useState()
   const [pastProduct, setPastProduct] = useState()
+  const [notBuy, setNotBuy] = useState()
 
   function showMore() {
-    setIsOpen((prevCheck) => !prevCheck)
+    setOrderIsopen((prevCheck) => !prevCheck)
     setIsActive((current) => !current)
   }
-  let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
-  let uploadTokenInfo = uploadToken.token
+  let jwtToken = window.localStorage.getItem('jwtToken')
+
   async function fetchOrders() {
-    setIsClick((current) => !current)
+    console.log(getUserProfile.token)
+    setIsOpen((prevCheck) => !prevCheck)
     const response = await fetch(`https://hazlin.work/api/1.0/orders`, {
       headers: new Headers({
-        Authorization: `Bearer ${uploadTokenInfo}`,
+        Authorization: `Bearer ${getUserProfile.token}`,
       }),
     })
     if (response.status === 200) {
-      // console.log(await response.json())
       const productList = await response.json()
       setPastProduct(productList)
-    } else if ((await response.json().list) <= 0) {
-      alert('您尚未購買過任何商品')
+      if (pastProduct.list.length === 0) {
+        setNotBuy(false)
+      } else if (pastProduct.list.length !== 0) {
+        setNotBuy(true)
+        setIsClick((current) => !current)
+      }
     }
   }
   // console.log(pastProduct)
@@ -197,24 +171,29 @@ function Member() {
             <OpenOrder
               onClick={fetchOrders}
               style={{
-                backgroundColor: isClick ? '#bc9272' : 'white',
-                color: isClick ? 'white' : '#bc9272',
+                backgroundColor: isClick ? 'white' : '#bc9272',
+                color: isClick ? '#bc9272' : 'white',
               }}
             >
               訂單明細
             </OpenOrder>
-            {pastProduct && (
+            {isOpen && pastProduct.list.length > 0 ? (
               <>
                 <Order>
-                  <TextTitle>訂單編號：{pastProduct.list[0].oid}</TextTitle>
-                  <TextTitle>日期：{pastProduct.list[0].time}</TextTitle>
+                  <TextTitle>
+                    訂單編號：
+                    {pastProduct ? pastProduct.list.oid : null}
+                  </TextTitle>
+                  <TextTitle>
+                    日期：{pastProduct ? pastProduct.list.time : null}
+                  </TextTitle>
                   <OrderDivide>
-                    <TextTitle>金額：NT 123</TextTitle>
+                    {/* <TextTitle>總金額：NT {pastProduct.list.total}</TextTitle> */}
                     <ShowMore
                       onClick={showMore}
                       style={{
-                        backgroundColor: isActive ? '#8B572A' : 'white',
-                        color: isActive ? 'white' : 'black',
+                        backgroundColor: isActive ? 'white' : '#8B572A',
+                        color: isActive ? 'black' : 'white',
                       }}
                     >
                       展開明細
@@ -222,8 +201,9 @@ function Member() {
                   </OrderDivide>
                 </Order>
               </>
-            )}
-            {isOpen && pastProduct
+            ) : null}
+            {!notBuy && <Note>您尚未購買過商品</Note>}
+            {orderIsOpen && pastProduct
               ? pastProduct.list.map((list, index) => {
                   return (
                     <Order key={index}>
@@ -253,7 +233,7 @@ function Member() {
           </>
         )}
         {currentPage === 1 && <PostUpload />}
-        {currentPage === 2 && <FollowingList></FollowingList>}
+        {currentPage === 2 && <FollowingList />}
       </Wrapper>
     </>
   )

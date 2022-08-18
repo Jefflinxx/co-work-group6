@@ -44,6 +44,10 @@ const PhotoDivide = styled(Divide)`
   align-items: center;
   margin-bottom: 24px;
 `
+const LoginDivide = styled.div`
+  display: flex;
+  align-items: center;
+`
 const Title = styled.div`
   margin-bottom: 32px;
   font-size: 36px;
@@ -255,22 +259,30 @@ const UploadPhoto = styled.img`
   border-radius: 50%;
   object-fit: cover;
 `
-
+const FollowPerson = styled.img`
+  width: 80px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 12px;
+`
 function Profile() {
   const [fbprofile, setfbProfile] = useState()
-  const [registerToken, setregisterToken] = useState(false)
   const [checkinToken, setcheckinToken] = useState(false)
   const [images, setImages] = useState([])
   const [imageURLs, setImageURLs] = useState([])
+  const [getUserProfile, setGetUserProfile] = useState(
+    JSON.parse(window.localStorage.getItem('jwtToken')) || [],
+  )
   const accountRef = useRef()
   const passwordRef = useRef()
   const emailRef = useRef()
   const checkinAccount = useRef()
   const checkinPassword = useRef()
   const currImage = images[0]
-  console.log(currImage)
 
   let jwtToken = window.localStorage.getItem('jwtToken')
+
   async function getProfile() {
     if (!jwtToken) {
       try {
@@ -287,6 +299,7 @@ function Profile() {
 
   const registerProcess = async () => {
     const register = async () => {
+      console.log(123456)
       if (
         !accountRef.current.value ||
         !passwordRef.current.value ||
@@ -294,7 +307,7 @@ function Profile() {
         images.length < 1
       ) {
         alert('表格不可為空')
-        setregisterToken(false)
+        // setcheckinToken(false)
       } else {
         var formdata = new FormData()
         formdata.append('signup_upload_files', currImage)
@@ -308,53 +321,56 @@ function Profile() {
             method: 'POST',
           },
         )
-        console.log(response)
-        // if (true) {
-        //   console.log('aaa')
-        //   console.log(response.status)
-        // }
+        // console.log(response)
         if (response.status === 200) {
-          alert('註冊成功')
+          alert('註冊成功，直接進入會員頁面')
           accountRef.current.value = ''
           passwordRef.current.value = ''
           emailRef.current.value = ''
-          // console.log(await response.json())
+          images[0] = undefined
+          setcheckinToken(true)
+          // const registerInfo = await response.json()
+          // setregisterToken(registerInfo)
+          // getProfileAPI()
         } else if (response.status === 403) {
           alert('email重複註冊')
-        } else if (response.status === 413) {
-          alert('照片檔案有誤')
+          setcheckinToken(false)
         } else {
           console.log('照片錯了')
         }
-        // console.log(await response.json())
         return await response.json()
+        // setGetUserProfile(await response.json())
       }
     }
-
-    async function setUserInfo() {
+    async function getProfileAPI() {
       let resJSON = await register()
-      let resUserInfo = await resJSON.data
-      let registerName = await resUserInfo.user.name
-      let resUserToken = await resUserInfo.access_token
-      let registerEmail = await resUserInfo.user.email
-      let registerPhoto = await resUserInfo.picture
-      let UserInfo = {
-        name: registerName,
-        token: resUserToken,
-        email: registerEmail,
-        photo: registerPhoto,
-      }
-      console.log(UserInfo)
-      window.localStorage.setItem('registerToken', JSON.stringify(UserInfo))
-    }
-    setUserInfo()
-    console.log(123)
-    if (window.localStorage.getItem('registerToken') !== []) {
-      setregisterToken(true)
-    }
-  }
+      let resJSONData = await resJSON.data
+      let resUserToken = await resJSONData.access_token
 
-  const checkInProcess = () => {
+      const response = await fetch(`https://hazlin.work/api/1.0/user/profile`, {
+        headers: new Headers({
+          Authorization: `Bearer ${resUserToken}`,
+        }),
+      })
+      console.log(1234)
+      if (response.status === 200) {
+        const profileList = await response.json()
+        console.log(profileList)
+        let UserInfo = {
+          token: resUserToken,
+          name: profileList.data.name,
+          email: profileList.data.email,
+          photo: profileList.data.picture,
+        }
+        console.log(UserInfo)
+        window.localStorage.setItem('jwtToken', JSON.stringify(UserInfo))
+      }
+    }
+    getProfileAPI()
+  }
+  console.log(getUserProfile)
+
+  const checkInProgress = async () => {
     const checkIn = async () => {
       if (!checkinAccount.current.value || !checkinPassword.current.value) {
         alert('表格不能為空')
@@ -376,59 +392,91 @@ function Profile() {
         )
         if (response.status === 200) {
           alert('成功登入')
+          setcheckinToken(true)
+          return await response.json()
         } else if (response.status === 403) {
           alert('Email或帳號有誤')
         }
-        return await response.json()
       }
     }
-    async function setUserInfo() {
+    async function getProfileAPI() {
       let resJSON = await checkIn()
-      let resCheckInfo = await resJSON.data
-      let resCheckName = await resCheckInfo.user.name
-      let resCheckEmail = await resCheckInfo.user.email
-      let resCheckToken = await resCheckInfo.access_token
-      let setcheckInInfo = {
-        token: resCheckToken,
-        name: resCheckName,
-        email: resCheckEmail,
+      let resJSONData = await resJSON.data
+      let resUserToken = await resJSONData.access_token
+
+      const response = await fetch(`https://hazlin.work/api/1.0/user/profile`, {
+        headers: new Headers({
+          Authorization: `Bearer ${resUserToken}`,
+        }),
+      })
+      console.log(1234)
+      if (response.status === 200) {
+        const profileList = await response.json()
+        console.log(profileList)
+        let UserInfo = {
+          token: resUserToken,
+          name: profileList.data.name,
+          email: profileList.data.email,
+          photo: profileList.data.picture,
+        }
+        console.log(UserInfo)
+        window.localStorage.setItem('jwtToken', JSON.stringify(UserInfo))
       }
-      window.localStorage.setItem('jwtToken', JSON.stringify(setcheckInInfo))
     }
-    setUserInfo()
-    if (window.localStorage.getItem('jwtToken') !== []) {
-      setcheckinToken(true)
-    }
+    getProfileAPI()
   }
 
-  function directToMember() {
-    if (!registerToken) {
-      console.log('尚未有會員資料')
-      // alert('尚未有會員資料')
-    }
-    let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
-    let registernData = {
-      provider: 'native',
-      name: directInfo.name,
-      email: directInfo.email,
-      password: directInfo.name,
-      token: directInfo.token,
-    }
-    window.localStorage.removeItem('registerToken')
-    window.localStorage.setItem('jwtToken', JSON.stringify(registernData))
+  // async function getCheckInInfo() {
+  //   let resJSON = await checkIn()
+  //   let resJSONData = await resJSON.data
+  //   let getProfileInfo = {
+  //     token: resJSONData.access_token,
+  //     name: resJSONData.user.name,
+  //     email: resJSONData.user.email,
+  //     photo: resJSONData.user.picture,
+  //   }
+  //   console.log(123)
+  //   window.localStorage.setItem('jwtToken', JSON.stringify(getProfileInfo))
+  //   window.localStorage.removeItem('registerToken')
+  //   setcheckinToken(true)
+  // }
 
-    setcheckinToken(true)
-  }
+  // async function directToMember() {
+  //   if (!registerToken) {
+  //     console.log('尚未有會員資料')
+  //     alert('尚未有會員資料')
+  //   } else {
+  //     const response = await fetch('https://hazlin.work/api/1.0/user/signin', {
+  //       body: JSON.stringify(checkinData),
+  //       headers: new Headers({
+  //         'Content-Type': 'application/json',
+  //       }),
+  //       method: 'POST',
+  //     })
+  //     if (response.status === 200) {
+  //       // alert('成功登入')
+  //       getCheckInInfo()
+  //       return await response.json()
+  //     }
+  //     // let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
+  //     // let registernData = {
+  //     //   provider: 'native',
+  //     //   name: directInfo.name,
+  //     //   email: directInfo.email,
+  //     //   password: directInfo.name,
+  //     //   token: directInfo.token,
+  //     // }
+  //     // window.localStorage.removeItem('registerToken')
+  //     // window.localStorage.setItem('jwtToken', JSON.stringify(registernData))
 
-  const LoginName = JSON.parse(window.localStorage.getItem('jwtToken'))
+  //     setcheckinToken(true)
+  //   }
+  // }
+
   useEffect(() => {
-    if (LoginName !== null) {
-      // setLoginNameInfo(LoginNameInfo)
+    if (jwtToken) {
       setcheckinToken(true)
     }
-  }, [LoginName])
-
-  useEffect(() => {
     if (images.length < 1) return
     const newImageUrls = []
     images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)))
@@ -439,8 +487,6 @@ function Profile() {
     setImages([...e.target.files])
     console.log(e.target.files[0])
   }
-
-  console.log(checkinToken)
 
   return (
     <>
@@ -510,11 +556,6 @@ function Profile() {
                           <BecomeMember onClick={registerProcess}>
                             註冊
                           </BecomeMember>
-                          {registerToken && (
-                            <SuccessLogin onClick={directToMember}>
-                              直接進入會員頁面
-                            </SuccessLogin>
-                          )}
                         </LoginForm>
                       </Modal>
                     </BackOver>
@@ -545,7 +586,7 @@ function Profile() {
                             type="text"
                             ref={checkinPassword}
                           ></PasswordInput>
-                          <BecomeMember onClick={checkInProcess}>
+                          <BecomeMember onClick={checkInProgress}>
                             登入
                           </BecomeMember>
                           <Divide>
@@ -590,14 +631,19 @@ function Profile() {
           <MemberWrapper>
             <MemberDivide>
               <MemberText>
-                歡迎 {LoginName ? LoginName.name : null} 教主回歸
+                <LoginDivide>
+                  <FollowPerson
+                    src={getUserProfile ? getUserProfile.photo : null}
+                  />
+                  歡迎 {getUserProfile ? getUserProfile.name : null} 教主回歸
+                </LoginDivide>
               </MemberText>
               <CheckOutBtn
                 onClick={() => {
                   window.localStorage.removeItem('jwtToken')
                   alert('成功登出')
                   setcheckinToken(false)
-                  setregisterToken(false)
+                  // setregisterToken(false)
                 }}
               >
                 登出
