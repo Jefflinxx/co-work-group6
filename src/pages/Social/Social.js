@@ -922,6 +922,7 @@ function Social() {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
         },
+        transports: ['websocket'],
       })
     }
 
