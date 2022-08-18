@@ -23,7 +23,7 @@ const FollowPerson = styled.div`
   width: 15%;
   aspect-ratio: 1/1;
   border-radius: 50%;
-  background-image: url(${profile});
+  background-image: url(${(props) => props.$backgroundImageUrl});
   background-repeat: no-repeat;
   background-size: cover;
   background-repeat: no-repeat;
@@ -89,6 +89,7 @@ const Post = styled.div`
 const PostImage = styled.img`
   width: 360px;
   height: 480px;
+  object-fit: cover;
   @media screen and (max-width: 1199px) {
     width: 100%;
     height: auto;
@@ -145,57 +146,76 @@ const PostSaveIcon = styled.div`
 function FollowingList() {
   const [isClick, setIsClick] = useState(false)
   const [postIsOpen, setPostIsopen] = useState(false)
-  const [postData, setPostData] = useState([])
+  const [getUserProfile, setGetUserProfile] = useState(
+    JSON.parse(window.localStorage.getItem('jwtToken')) || [],
+  )
+  const [followerData, setFollowerData] = useState()
+  const [savedPostData, setSavedPostData] = useState()
 
-  // useEffect(() => {
-  //   async function showSavedPost() {
+  let jwtToken = window.localStorage.getItem('jwtToken')
 
-  //     const response = await fetch(`https://hazlin.work/api/1.0/user/saved`, {
-  //       headers: new Headers({
-  //         Authorization: `Bearer ${faketoken}`,
-  //       }),
-  //     })
-
-  //     if (response.status === 200) {
-  //       // console.log(await response.json())
-
-  //       const respostData = await response.json()
-  //       // setPostData(await respostData)
-  //       return await response.json()
-  //     } else {
-  //       console.log((error) => console.log('error', error))
-  //     }
-  //   }
-  //   showSavedPost()
-  // }, [])
-
-  async function getsavedPost() {
-    setIsClick((current) => !current)
-    setPostIsopen((prevCheck) => !prevCheck)
-    let savedPost = await postData
-    let savedPostInfo = await savedPost.posts
-    console.log(await savedPostInfo)
-    if (savedPostInfo > 0) {
-      console.log(savedPostInfo[1].postPic)
+  async function getfollowed() {
+    const response = await fetch(`https://hazlin.work/api/1.0/user/followed`, {
+      headers: new Headers({
+        Authorization: `Bearer ${getUserProfile.token}`,
+      }),
+    })
+    if (response.status === 200) {
+      // console.log(await response.json())
+      console.log(200)
+      const savedFollower = await response.json()
+      setFollowerData(savedFollower)
+      if (setFollowerData.length === 0) {
+        console.log('200 none')
+        alert('尚未追蹤教主們，你落後了')
+      } else if (setFollowerData.length !== 0) {
+        console.log('200 有收藏')
+        console.log(followerData)
+      }
     }
   }
 
+  async function getsavedPost() {
+    const response = await fetch(`https://hazlin.work/api/1.0/user/saved`, {
+      headers: new Headers({
+        Authorization: `Bearer ${getUserProfile.token}`,
+      }),
+    })
+    if (response.status === 200) {
+      // console.log(await response.json())
+      // console.log(200)
+      const savedPost = await response.json()
+      setSavedPostData(savedPost)
+      if (savedPostData.length === 0) {
+        // console.log('200 none')
+        alert('尚未追蹤教主們，你落後了')
+      } else if (savedPostData.length !== 0) {
+        setIsClick((current) => !current)
+        setPostIsopen((prevCheck) => !prevCheck)
+        // console.log('200 有收藏')
+        // console.log(savedPostData)
+      }
+    }
+  }
+
+  console.log(savedPostData)
   return (
     <>
       <Wrapper>
         <PhotoWrapper>
-          <TextTitle>追蹤的潮流教主</TextTitle>
+          <TextTitle onClick={getfollowed}>追蹤的潮流教主</TextTitle>
           <Divide>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
-            <FollowPerson></FollowPerson>
+            {followerData &&
+              followerData.map((item, index) => {
+                return (
+                  <FollowPerson
+                    key={index}
+                    $backgroundImageUrl={item.user_picture}
+                  >
+                    {item.user_name}
+                  </FollowPerson>
+                )
+              })}
           </Divide>
         </PhotoWrapper>
         <TextTitle>我收藏的潮流貼文</TextTitle>
@@ -209,28 +229,21 @@ function FollowingList() {
         >
           查看我的收藏
         </TextMore>
-        {postIsOpen && (
-          <Divide>
-            <PostWrapper>
-              <Post>
-                <PostImage
-                  src={'https://hazlin.work/assets/KOL/0a5d4f5d.jpeg'}
-                  // onClick={() => {
-                  //   if (window.innerWidth > 412) {
-                  //     console.log("click");
-                  //     setIsActive(true);
-                  //   }
-                  // }}
-                />
-                <PostIconWrapper>
-                  <PostHeartIcon></PostHeartIcon>
-                  <PostIconNumber>1234</PostIconNumber>
-                  <PostSaveIcon></PostSaveIcon>
-                </PostIconWrapper>
-              </Post>
-            </PostWrapper>
-          </Divide>
-        )}
+        <PostWrapper>
+          {savedPostData && postIsOpen
+            ? savedPostData.map((item, id) => {
+                return (
+                  <Post key={id}>
+                    <PostImage src={item.posts.postPic} />
+                    <PostIconWrapper>
+                      <PostHeartIcon></PostHeartIcon>
+                      <PostIconNumber>{item.posts.hearts}</PostIconNumber>
+                    </PostIconWrapper>
+                  </Post>
+                )
+              })
+            : null}
+        </PostWrapper>
       </Wrapper>
     </>
   )
