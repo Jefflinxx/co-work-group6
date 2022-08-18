@@ -6,11 +6,14 @@ import { io } from 'socket.io-client'
 
 import Footer from './components/Footer/Footer'
 import Header from './components/Header/Header'
+import Notification from './components/Notification'
 import CartContext from './contexts/CartContext'
 import PingFangTCRegular from './fonts/PingFang-TC-Regular-2.otf'
 import PingFangTCThin from './fonts/PingFang-TC-Thin-2.otf'
 import NotoSansTCRegular from './fonts/NotoSansTC-Regular.otf'
 import NotoSansTCBold from './fonts/NotoSansTC-Bold.otf'
+
+import styled from 'styled-components'
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
@@ -56,10 +59,21 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
+const TestButton = styled.button`
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  width: 100px;
+  height: 60px;
+  background: #b19675e1;
+  border-radius: 10px;
+`
+
 function App() {
   const [cartItems, setCartItems] = useState(
     JSON.parse(window.localStorage.getItem('cartItems')) || [],
   )
+  const [socketLike, setSocketLike] = useState([])
   const socket = useRef(null)
 
   function getItems() {
@@ -110,7 +124,7 @@ function App() {
 
   let token = window.localStorage.getItem('jwtToken')
   useEffect(() => {
-    if (token) {
+    if (localStorage.jwtToken) {
       socket.current = io.connect('https://hazlin.work/', {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
@@ -119,6 +133,7 @@ function App() {
       // message from server
       socket.current.on('liked', (msg) => {
         console.log('msg: ', msg)
+        setSocketLike(true)
       })
       // notification from server
       socket.current.on('followed', (msg) => {
@@ -133,6 +148,17 @@ function App() {
       <GlobalStyle />
       <Header />
       <Outlet />
+      <TestButton
+        onClick={() => {
+          setSocketLike(!socketLike)
+          setTimeout(() => {
+            setSocketLike(false)
+          }, 2000)
+        }}
+      >
+        testbutton
+      </TestButton>
+      <Notification socketLike={socketLike} />
       <Footer />
     </CartContext.Provider>
   )
