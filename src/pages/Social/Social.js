@@ -865,7 +865,7 @@ function Social() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ post_id: postId, followed_id: followId }),
-      method: "POST",
+      method: "PATCH",
     });
 
     if (response.status === 200) {
@@ -922,6 +922,7 @@ function Social() {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
         },
+        transports: ["websocket"],
       });
     }
 

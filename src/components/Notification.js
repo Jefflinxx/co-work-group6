@@ -4,22 +4,33 @@ import styled from "styled-components";
 const NotificationWrapper = styled.div`
   position: fixed;
   width: 260px;
+  right: 0px;
   bottom: 100px;
   border: 1px solid black;
   display: flex;
   flex-wrap: wrap-reverse;
+  ${"" /* justify-content: flex-end; */}
 `;
 
 const NotificationDiv = styled.div`
   position: relative;
-  right: ${(props) => (props.$socketLike ? "0px" : "-100px")};
+  right: ${(props) => {
+    console.log(props.socketLike);
+    console.log(props.$on);
+    console.log(props.socketLike.includes(props.$on));
+
+    return props.socketLike.includes(props.$on) ? "0px" : "-100px";
+  }};
   width: 260px;
   height: 60px;
   background: #b19675e1;
   border-radius: 10px;
-  opacity: ${(props) => (props.$socketLike ? 1 : 0)};
+  opacity: ${(props) => (props.socketLike.includes(props.$on) ? 1 : 0)};
+  margin-top: ${(props) =>
+    props.socketLike.includes(props.$on) ? "10px" : "0px"};
+  margin-top: 20px;
 
-  transition: all 0.5s;
+  transition: all 1s;
 
   display: flex;
   align-items: center;
@@ -30,7 +41,13 @@ const NotificationDiv = styled.div`
 function Notification({ socketLike }) {
   return (
     <NotificationWrapper>
-      <NotificationDiv $socketLike={socketLike}>我按了你讚</NotificationDiv>
+      {socketLike.map((i) => {
+        return (
+          <NotificationDiv socketLike={socketLike} $on={i}>
+            {i.name}按了你讚
+          </NotificationDiv>
+        );
+      })}
     </NotificationWrapper>
   );
 }

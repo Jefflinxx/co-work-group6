@@ -128,19 +128,37 @@ function App() {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
         },
+        transports: ["websocket"],
       });
       // message from server
       socket.current.on("liked", (msg) => {
         console.log("msg: ", msg);
-        setSocketLike(true);
+        // setSocketLike((prev) => {
+        //   prev.unshift({ id: msg.fromUserId, name: msg.fromUserName });
+        //   const a = [...prev];
+        //   return a;
+        // });
+        // setTimeout(() => {
+        //   setSocketLike((prev) => {
+        //     prev.pop();
+        //     const a = [...prev];
+        //     return a;
+        //   });
+        // }, 2000);
       });
       // notification from server
       socket.current.on("followed", (msg) => {
         console.log("msg: ", msg);
       });
     }
-  }, [socket]);
+  }, []);
 
+  const testarray = [
+    { id: 1, name: "a" },
+    { id: 2, name: "b" },
+    { id: 3, name: "c" },
+    { id: 4, name: "d" },
+  ];
   return (
     <CartContext.Provider value={cart}>
       <Reset />
@@ -149,9 +167,17 @@ function App() {
       <Outlet />
       <TestButton
         onClick={() => {
-          setSocketLike(!socketLike);
+          setSocketLike((prev) => {
+            prev.unshift({ id: 3, name: "c" });
+            const a = [...prev];
+            return a;
+          });
           setTimeout(() => {
-            setSocketLike(false);
+            setSocketLike((prev) => {
+              prev.pop();
+              const a = [...prev];
+              return a;
+            });
           }, 2000);
         }}
       >
