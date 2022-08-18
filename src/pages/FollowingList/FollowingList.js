@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import imagetest from './imagetest.png'
 import heart from './heart.png'
@@ -13,13 +14,16 @@ const PhotoWrapper = styled.div`
   width: 800px;
   margin: 0 auto;
   margin-bottom: 40px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `
 const Divide = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 `
-const FollowPerson = styled.div`
+const FollowPerson = styled.a`
   width: 15%;
   aspect-ratio: 1/1;
   border-radius: 50%;
@@ -49,8 +53,12 @@ const FollowPerson = styled.div`
 `
 const TextTitle = styled.div`
   text-align: center;
-  font-size: 28px;
+  font-size: 28x;
   margin-bottom: 20px;
+  @media screen and (max-width: 767px) {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
 `
 const TextMore = styled(TextTitle)`
   font-size: 18px;
@@ -83,7 +91,7 @@ const Post = styled.div`
     width: 100%;
     height: auto;
     border-radius: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 12px;
   }
 `
 const PostImage = styled.img`
@@ -153,6 +161,15 @@ function FollowingList() {
   const [savedPostData, setSavedPostData] = useState()
 
   let jwtToken = window.localStorage.getItem('jwtToken')
+  let navigate = useNavigate()
+
+  useEffect(() => {
+    if (jwtToken) {
+      getfollowed()
+      getsavedPost()
+    }
+    return
+  }, [])
 
   async function getfollowed() {
     const response = await fetch(`https://hazlin.work/api/1.0/user/followed`, {
@@ -162,7 +179,7 @@ function FollowingList() {
     })
     if (response.status === 200) {
       // console.log(await response.json())
-      console.log(200)
+      // console.log(200)
       const savedFollower = await response.json()
       setFollowerData(savedFollower)
       if (setFollowerData.length === 0) {
@@ -174,6 +191,7 @@ function FollowingList() {
       }
     }
   }
+  console.log(followerData)
 
   async function getsavedPost() {
     const response = await fetch(`https://hazlin.work/api/1.0/user/saved`, {
@@ -211,6 +229,11 @@ function FollowingList() {
                   <FollowPerson
                     key={index}
                     $backgroundImageUrl={item.user_picture}
+                    onClick={() => {
+                      navigate(
+                        `../social/?postKeyword=${item.user_id}&sort=time`,
+                      )
+                    }}
                   >
                     {item.user_name}
                   </FollowPerson>
