@@ -13,6 +13,10 @@ const Wrapper = styled.div`
 const Divide = styled.div`
   display: flex;
 `
+const Displayflex = styled.div`
+  display: flex;
+  position: relative;
+`
 const DivideColumn = styled.div`
   display: flex;
   flex-direction: column;
@@ -68,8 +72,9 @@ const ScreenBtn = styled.button`
   }
 `
 const UploadWay = styled(Divide)`
+  position: relative;
   flex-direction: column;
-  flex-grow: 1;
+  width: 35%;
   @media screen and (max-width: 1000px) {
     width: 15%;
   }
@@ -248,6 +253,7 @@ const FindPostBtn = styled.button`
   margin: 20px auto;
   text-align: center;
   border: none;
+  cursor: pointer;
   background-color: transparent;
   &:hover {
     text-decoration: underline;
@@ -308,8 +314,6 @@ const DeleteBtn = styled.div`
 `
 const cameraWidth = 360
 const cameraHeight = 480
-// const cameraPhoneWidth = 500
-// const cameraPhoneHeight = 480
 const aspectRatio = cameraWidth / cameraHeight
 
 const videoConstraints = {
@@ -362,13 +366,9 @@ const Post = styled.div`
   }
 `
 const PostImage = styled.img`
-  width: 360px;
-  height: 480px;
+  width: 100%;
+  aspect-ratio: 0.68/1;
   object-fit: cover;
-  @media screen and (max-width: 1199px) {
-    width: 100%;
-    height: auto;
-  }
 `
 const PostIconWrapper = styled.div`
   width: 360px;
@@ -601,7 +601,7 @@ function PostUpload() {
         <Title>上傳你的自信穿搭</Title>
         <DisplayDivide>
           <UploadWay>
-            <Divide>
+            <Displayflex>
               <HoverDivide>
                 {isHover || local ? (
                   <HoverNote onClick>本地端</HoverNote>
@@ -620,7 +620,7 @@ function PostUpload() {
                   onMouseOut={handleMouseOut2}
                 ></WayPicCamera>
               </HoverDivide>
-            </Divide>
+            </Displayflex>
             {camera && (
               <>
                 <Webcam

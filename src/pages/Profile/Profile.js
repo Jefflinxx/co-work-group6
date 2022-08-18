@@ -682,7 +682,11 @@ function Profile() {
               <MemberText>
                 <LoginDivide>
                   <FollowPerson
-                    src={getUserProfile ? getUserProfile.photo : null}
+                    src={
+                      getUserProfile
+                        ? getUserProfile.photo
+                        : 'https://hazlin.work//assets/userpictures/89a5fcc3.jpeg'
+                    }
                   />
                   歡迎 {getUserProfile ? getUserProfile.name : null} 教主回歸
                 </LoginDivide>

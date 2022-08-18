@@ -41,6 +41,7 @@ const FollowPerson = styled.a`
   margin-bottom: 20px;
 
   color: white;
+  cursor: pointer;
 
   &:hover {
     aspect-ratio: 1/1;
