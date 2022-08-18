@@ -13,6 +13,16 @@ const Wrapper = styled.div`
 const Divide = styled.div`
   display: flex;
 `
+const DivideColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+const DisplayDivide = styled(Divide)`
+  ${'' /* justify-content: space-between; */}
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
+`
 const TagDivide = styled(Divide)`
   align-items: center;
   margin-top: 20px;
@@ -27,6 +37,9 @@ const Title = styled.div`
   font-weight: bold;
   text-align: center;
   margin-bottom: 24px;
+  @media screen and (max-width: 767px) {
+    font-size: 24px;
+  }
 `
 const WayPicLocal = styled.div`
   background-image: url(${Local});
@@ -46,24 +59,60 @@ const ScreenBtn = styled.button`
   padding: 12px;
   background-color: transparent;
   cursor: pointer;
+  @media screen and (max-width: 767px) {
+    font-size: 18px;
+    width: 80%;
+    margin-right: 6px;
+    margin-left: 6px;
+    margin-bottom: 12px;
+  }
 `
 const UploadWay = styled(Divide)`
   flex-direction: column;
   flex-grow: 1;
-  width: 15%;
-  position: relative;
+  @media screen and (max-width: 1000px) {
+    width: 15%;
+  }
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
 `
-const UploadWayTag = styled(UploadWay)`
-  display: flex;
-  flex-direction: row;
-  width: 50%;
-  margin-left: 24px;
+const UploadWayTag = styled(Divide)`
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 45%;
+  @media screen and (max-width: 1200px) {
+    width: 35%;
+  }
+  @media screen and (max-width: 1000px) {
+    width: 15%;
+    flex-direction: column;
+    margin-left: 30px;
+  }
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
 `
-const UploadProduct = styled(UploadWay)`
-  width: 80%;
+const UploadProduct = styled.div`
+  width: 85%;
+  margin-right: 20px;
+  @media screen and (max-width: 1000px) {
+    margin-right: 0;
+    width: 100%;
+  }
+  @media screen and (max-width: 767px) {
+    width: 80%;
+  }
 `
-const CustomisedTag = styled(UploadWay)`
-  width: 80%;
+const CustomisedTag = styled.div`
+  width: 85%;
+  @media screen and (max-width: 1000px) {
+    margin-right: 0;
+    width: 100%;
+  }
+  @media screen and (max-width: 767px) {
+    width: 80%;
+  }
 `
 const UploadPic = styled.div`
   margin-top: 20px;
@@ -71,6 +120,9 @@ const UploadPic = styled.div`
   height: 480px;
   background-color: #d9d9d9;
   border-radius: 8px;
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
 `
 const UploadPhoto = styled.img`
   width: 360px;
@@ -78,6 +130,10 @@ const UploadPhoto = styled.img`
   background-color: #d9d9d9;
   border-radius: 8px;
   object-fit: cover;
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    height: 100%;
+  }
 `
 const Tag = styled.input`
   font-size: 24px;
@@ -91,31 +147,51 @@ const Label = styled.label`
   margin-bottom: 12px;
   border-radius: 8px;
 
-  width: 80%;
+  width: 100%;
   color: black;
   background-color: #edc187;
+  @media screen and (max-width: 1000px) {
+    font-size: 18px;
+  }
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+    padding: 4px;
+  }
 `
 const TagLabel = styled.label`
   font-size: 20px;
-  position: relative;
   width: 80%;
+  @media screen and (max-width: 1000px) {
+    font-size: 14px;
+    width: 100%;
+  }
 `
 const FindProductTag = styled.div`
   font-size: 18px;
   margin-bottom: 12px;
+  @media screen and (max-width: 1000px) {
+    font-size: 12px;
+  }
 `
 const PutTag = styled.input`
   font-size: 20px;
   line-height: 20px;
-
+  width: 100%;
   border: 1px solid #979797;
   border-radius: 8px;
-  height: 60px;
+  height: 40px;
   padding: 20px;
+  @media screen and (max-width: 1000px) {
+    height: 30px;
+    width: 100%;
+  }
 `
 const ShowTag = styled.div`
   position: relative;
-  width: 90%;
+  ${'' /* width: 90%; */}
+  @media screen and (max-width: 1000px) {
+    font-size: 18px;
+  }
 `
 const TagBtn = styled.div`
   position: absolute;
@@ -124,12 +200,17 @@ const TagBtn = styled.div`
 
   background-color: #979797;
   width: 100px;
-  height: 60px;
+  height: 42px;
   text-align: center;
-  padding: 20px;
+  padding: 12px;
   color: white;
   border-radius: 0 8px 8px 0;
   cursor: pointer;
+  @media screen and (max-width: 767px) {
+    ${'' /* height: 30px; */}
+    padding: 10px;
+    width: 80px;
+  }
 `
 const UploadBtn = styled.div`
   cursor: pointer;
@@ -147,62 +228,51 @@ const UploadBtn = styled.div`
     background-color: #bc9272;
     color: white;
   }
+  @media screen and (max-width: 767px) {
+    font-size: 18px;
+    padding: 18px;
+  }
 `
 const FindBtn = styled.button`
   border: 1px solid black;
   border-radius: 8px;
   cursor: pointer;
-  width: 80%;
+  width: 100%;
   text-align: center;
   padding: 12px;
   background-color: transparent;
 `
-const FindPostBtn = styled(FindBtn)`
+const FindPostBtn = styled.button`
   width: 100%;
   font-size: 20px;
-  margin: 0 auto;
+  margin: 20px auto;
+  text-align: center;
   border: none;
-
+  background-color: transparent;
   &:hover {
     text-decoration: underline;
   }
+  @media screen and (max-width: 767px) {
+    margin-top: 0;
+    font-size: 12px;
+  }
 `
-const Note = styled.span`
+const Note = styled.div`
   font-size: 14px;
   color: red;
   margin-bottom: 12px;
+  white-space: no-wrap;
 `
 const IDnote = styled(Note)`
   font-size: 12px;
   color: gray;
   margin-top: 6px;
 `
-const SelectTag = styled.select`
-  width: 95%;
-  height: 60px;
-  padding-left: 20px;
-  border-radius: 8px;
-  border: solid 1px #979797;
 
-  @media screen and (max-width: 1279px) {
-    margin-left: 0;
-    margin-top: 10px;
-    width: 100%;
-  }
-`
 const ClickedTag = styled.input`
-  ${'' /* display:none; */}
-  ${'' /* position:absolute; */}
-  ${'' /* &::after{
-    content:''; */}
-    width:16px;
-    height:16px;
-    border:1px solid black;
-  ${'' /* } */}
-
-  ${'' /* background-color: rgba(0, 0, 0, 0.2); */}
-  ${'' /* border: 1px solid rgba(0, 0, 0, 0.2); */}
-  ${'' /* border-radius: 8px; */}
+  width: 16px;
+  height: 16px;
+  border: 1px solid black;
 
   cursor: pointer;
 `
@@ -210,14 +280,18 @@ const ShowTagList = styled(ShowTag)`
   margin-top: 12px;
   font-size: 24px;
   margin-bottom: 12px;
+  @media screen and (max-width: 900px) {
+    font-size: 16px;
+  }
 `
-const DeleteBtn = styled.button`
+const DeleteBtn = styled.div`
   border-radius: 8px;
   border: 1px solid black;
   width: 100px;
   height: 30px;
   background-color: white;
-  ${'' /* padding: 12px; */}
+  text-align: center;
+  padding: 4px 10px;
   font-size: 20px;
   line-height: 20px;
 
@@ -227,9 +301,15 @@ const DeleteBtn = styled.button`
     background-color: #e53935;
     color: white;
   }
+  @media screen and (max-width: 900px) {
+    width: 60px;
+    font-size: 14px;
+  }
 `
 const cameraWidth = 360
 const cameraHeight = 480
+// const cameraPhoneWidth = 500
+// const cameraPhoneHeight = 480
 const aspectRatio = cameraWidth / cameraHeight
 
 const videoConstraints = {
@@ -278,7 +358,7 @@ const Post = styled.div`
     width: 100%;
     height: auto;
     border-radius: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 12px;
   }
 `
 const PostImage = styled.img`
@@ -346,6 +426,10 @@ function PostUpload() {
   const customizedTag = useRef()
   const [savedCustomizedTag, setSavedCustomizedTag] = useState([])
   const [pastPosts, setPastPosts] = useState()
+  const [getUserProfile, setGetUserProfile] = useState(
+    JSON.parse(window.localStorage.getItem('jwtToken')) || [],
+  )
+
   function onImageChange(e) {
     setImages([...e.target.files])
     console.log(e.target.files[0])
@@ -366,27 +450,29 @@ function PostUpload() {
     console.log(savedCustomizedTag)
     customizedTag.current.value = ''
   }
-  // function deleteTag(key) {
-  //   // let deleteIndex
-  //   console.log(456)
-  //   setsavedCustomizedTag(savedCustomizedTag.filter((item) => item.key !== key))
-  // }
+  function deleteTag(key) {
+    // let deleteIndex
+    console.log(savedCustomizedTag)
+    console.log(key)
+    let newTag = savedCustomizedTag.filter((item, index) => index !== key)
+    console.log(newTag)
+    setSavedCustomizedTag(newTag)
+  }
+
+  console.log(savedCustomizedTag)
+
   function onKeyDown(e) {
     if (e.key === 'Enter') {
       addtagInput()
     }
   }
 
-  let uploadToken = JSON.parse(window.localStorage.getItem('jwtToken'))
-  let uploadTokenInfo
-  if (uploadToken) {
-    uploadTokenInfo = uploadToken.token
-  }
+  let jwtToken = window.localStorage.getItem('jwtToken')
   // // 儲存按過的select
   async function findProductTag() {
     const response = await fetch(`https://hazlin.work/api/1.0/orders`, {
       headers: new Headers({
-        Authorization: `Bearer ${uploadTokenInfo}`,
+        Authorization: `Bearer ${getUserProfile.token}`,
       }),
     })
     if (response.status === 200) {
@@ -417,39 +503,24 @@ function PostUpload() {
     console.log(checked)
   }
 
-  // function chooseProductTag(e, key) {
-  //   console.log(e.target.value)
-  //   console.log(key.value)
-  //   // if (savedTag === false) {
-  //   //   let tags=[
-  //   //     {
-  //   //       proucutId:,
-  //   //       productName:e.target.value
-  //   //     }
-  //   //   ]
-  //   //   setSavedTag(true)
-  //   //   setChooseTag([e.target.value])
-  //   //   console.log(chooseTag)
-  //   // } else {
-  //   //   setSavedTag(false)
-  //   // }
-  // }
-
   async function uploadFile() {
+    console.log(cameraImg, 'bbb')
     const base64Data = cameraImg
     console.log(base64Data)
     const base64DataResponse = await fetch(`${base64Data}`)
     const cameraBlob = await base64DataResponse.blob()
     setUploadCameraImage(cameraBlob)
+    console.log('aaa')
+    console.log(currImage)
     if (!base64Data && currImage === undefined) {
       alert('圖片不可為空')
     } else {
       var myHeaders = new Headers()
-      myHeaders.append('Authorization', `Bearer ${uploadTokenInfo}`)
+      myHeaders.append('Authorization', `Bearer ${getUserProfile.token}`)
       var formdata = new FormData()
-      formdata.append('upload_files', currImage)
       formdata.append('tags', JSON.stringify(savedCustomizedTag))
       formdata.append('camera_image', cameraBlob)
+      formdata.append('upload_files', currImage)
       formdata.append(
         'products',
         '[{"pid":201902191247,"pName":"經典修身長筒牛仔褲"},{"pid":201902191245,"pName":"小扇紋質感上衣"}]',
@@ -476,17 +547,18 @@ function PostUpload() {
     setIsOpen((prevCheck) => !prevCheck)
     const response = await fetch(`https://hazlin.work/api/1.0/user/post`, {
       headers: new Headers({
-        Authorization: `Bearer ${uploadTokenInfo}`,
+        Authorization: `Bearer ${getUserProfile.token}`,
       }),
     })
     if (response.status === 200) {
       // console.log(await response.json())
       const pastPostList = await response.json()
       setPastPosts(pastPostList)
+      console.log(pastPosts)
       if (pastPosts[0].posts.length === 0) {
         window.alert('您尚未帶起風潮')
         console.log('not yet post')
-      } else {
+      } else if (pastPosts[0].posts.length !== 0) {
         console.log(123)
       }
     }
@@ -527,7 +599,7 @@ function PostUpload() {
     <>
       <Wrapper>
         <Title>上傳你的自信穿搭</Title>
-        <Divide>
+        <DisplayDivide>
           <UploadWay>
             <Divide>
               <HoverDivide>
@@ -553,8 +625,8 @@ function PostUpload() {
               <>
                 <Webcam
                   videoConstraints={videoConstraints}
-                  width={cameraWidth}
-                  height={cameraHeight}
+                  width={100 + '%'}
+                  height={80 + '%'}
                   audio={false}
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
@@ -576,7 +648,7 @@ function PostUpload() {
                 </UploadPic>
                 <Tag
                   type="file"
-                  multiple
+                  multiple="multiple"
                   accept="image/*"
                   onChange={onImageChange}
                 />
@@ -585,9 +657,11 @@ function PostUpload() {
           </UploadWay>
           <UploadWayTag>
             <UploadProduct>
-              <Label>圖片所包含商品</Label>
-              <Note>*必填</Note>
-              <FindProductTag>查找歷史購買產品</FindProductTag>
+              <DivideColumn>
+                <Label>圖片所包含商品</Label>
+                <Note>*必填|查找歷史購買產品</Note>
+              </DivideColumn>
+              {/* <FindProductTag>查找歷史購買產品</FindProductTag> */}
               <FindBtn onClick={findProductTag}>點選查找</FindBtn>
               {pastProduct &&
                 pastProduct.list.map((list, key) => {
@@ -609,8 +683,10 @@ function PostUpload() {
                 })}
             </UploadProduct>
             <CustomisedTag>
-              <Label>加入商品名稱TAG</Label>
-              <Note>可自行選擇填入</Note>
+              <DivideColumn>
+                <Label>加入商品名稱TAG</Label>
+                <Note>可自行選擇填入</Note>
+              </DivideColumn>
               <ShowTag>
                 <PutTag type="text" ref={customizedTag} onKeyDown={onKeyDown} />
                 <TagBtn onClick={addtagInput}>輸入</TagBtn>
@@ -621,14 +697,16 @@ function PostUpload() {
                     <>
                       <DeleteDivide key={index}>
                         <ShowTagList>{tag}</ShowTagList>
-                        <DeleteBtn onClick>Delete</DeleteBtn>
+                        <DeleteBtn onClick={() => deleteTag(index)}>
+                          Delete
+                        </DeleteBtn>
                       </DeleteDivide>
                     </>
                   )
                 })}
             </CustomisedTag>
           </UploadWayTag>
-        </Divide>
+        </DisplayDivide>
         <UploadBtn onClick={uploadFile}>送出貼文</UploadBtn>
         <Title>我的潮流貼文</Title>
         <FindPostBtn onClick={showMyPastPost}>點選查看過往風流</FindPostBtn>

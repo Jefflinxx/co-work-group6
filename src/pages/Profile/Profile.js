@@ -22,15 +22,28 @@ const Wrapper = styled.div`
 
   margin: 0 auto;
   max-width: 1160px;
+  @media screen and (max-width: 767px) {
+    padding: 40px 20px;
+  }
 `
 const MemberWrapper = styled.div`
   padding: 60px 20px;
   margin: 0 auto;
   max-width: 1160px;
+  @media screen and (max-width: 767px) {
+    padding: 40px 20px;
+  }
 `
 const Divide = styled.div`
   display: flex;
+`
+
+const BtnDivide = styled(Divide)`
   justify-content: space-between;
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+    justify-content: center;
+  }
 `
 const MemberDivide = styled(Divide)`
   margin: 0 auto;
@@ -38,20 +51,36 @@ const MemberDivide = styled(Divide)`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `
 const PhotoDivide = styled(Divide)`
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 24px;
+  @media screen and (max-width: 900px) {
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
 `
 const LoginDivide = styled.div`
   display: flex;
   align-items: center;
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `
 const Title = styled.div`
   margin-bottom: 32px;
   font-size: 36px;
   font-weight: bold;
+
+  @media screen and (max-width: 1279px) {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
 `
 const Text = styled.p`
   font-size: 14px;
@@ -64,6 +93,9 @@ const MainLogin = styled.div`
   height: auto;
   padding: 30px;
   box-shadow: 5px 5px 1px rgba(0, 0, 0, 0.2);
+  @media screen and (max-width: 767px) {
+    width: calc(100vw - 20px);
+  }
 `
 const HotImage = styled.div`
   width: 100%;
@@ -98,6 +130,15 @@ const SubTitle = styled(Title)`
     right: 0;
     height: 1px;
     background-color: #3f3a3a;
+  }
+  @media screen and (max-width: 767px) {
+    font-size: 16px;
+    &::before {
+      width: 20%;
+    }
+    &::after {
+      width: 20%;
+    }
   }
 `
 const Btn = styled.button`
@@ -136,6 +177,10 @@ const BtnMember = styled(Btn)`
     color: white;
     border: 1px solid #8b572a;
   }
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    margin-bottom: 16px;
+  }
 `
 const CloseBtn = styled.button`
   position: absolute;
@@ -153,6 +198,10 @@ const CloseBtn = styled.button`
     background-color: black;
     color: white;
   }
+  @media screen and (max-width: 767px) {
+    right: 10px;
+    top: 10px;
+  }
 `
 const CheckOutBtn = styled.div`
   font-size: 18px;
@@ -160,12 +209,14 @@ const CheckOutBtn = styled.div`
   &:hover {
     text-decoration: underline;
   }
+  @media screen and (max-width: 767px) {
+    margin-top: 20px;
+  }
 `
 const MemberText = styled.div`
   font-size: 20px;
 `
 const BackOver = styled.div`
-  ${'' /* display: none; */}
   position: fixed;
   top: 0;
   left: 0;
@@ -183,6 +234,10 @@ const Modal = styled.div`
   top: 10vh;
   z-index: 11;
   min-height: 100vh;
+  @media screen and (max-width: 767px) {
+    width: calc(100vw - 100px);
+    top: 5vh;
+  }
 `
 const LoginForm = styled.div`
   position: relative;
@@ -190,20 +245,33 @@ const LoginForm = styled.div`
   background-color: white;
   padding: 30px;
   text-align: left;
+  @media screen and (max-width: 767px) {
+    max-height: 600px;
+    overflow: scroll;
+  }
 `
 const Logo = styled.div`
   margin: 0 auto;
   margin-bottom: 36px;
 
   background-image: url(${LogoPic});
+  background-size: cover;
   width: 260px;
   height: 48px;
   background-size: cover;
+  @media screen and (max-width: 767px) {
+    width: 129px;
+    height: 24px;
+    margin-bottom: 20px;
+  }
 `
 const AccountLabel = styled.label`
   font-size: 16px;
   margin-bottom: 8px;
   text-align: left;
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+  }
 `
 const AccountInput = styled.input`
   width: 100%;
@@ -220,6 +288,11 @@ const AccountInput = styled.input`
   background-size: 20px;
 
   margin-bottom: 24px;
+  @media screen and (max-width: 767px) {
+    margin-bottom: 12px;
+    padding: 12px 35px;
+    font-size: 16px;
+  }
 `
 const PasswordInput = styled(AccountInput)`
   background-image: url(${Password});
@@ -232,7 +305,6 @@ const BecomeMember = styled(BtnMember)`
   margin: 0 auto;
   margin-top: 24px;
 `
-const SuccessLogin = styled(BecomeMember)``
 const NotMemberText = styled.div`
   font-size: 12px;
   margin-top: 12px;
@@ -243,7 +315,13 @@ const NotMemberText = styled.div`
 `
 const Tag = styled.input`
   font-size: 24px;
-  margin: 20px 45px;
+  margin: 10px 20px;
+
+  @media screen (max-width: 767px) {
+    margin: 10px 20px;
+    width: 40%;
+    font-size: 12px;
+  }
 `
 const UploadPic = styled.div`
   margin-top: 20px;
@@ -251,6 +329,10 @@ const UploadPic = styled.div`
   height: 180px;
   background-color: #d9d9d9;
   border-radius: 50%;
+  @media screen and (max-width: 767px) {
+    width: 120px;
+    height: 120px;
+  }
 `
 const UploadPhoto = styled.img`
   width: 180px;
@@ -258,6 +340,9 @@ const UploadPhoto = styled.img`
   background-color: #d9d9d9;
   border-radius: 50%;
   object-fit: cover;
+  @media screen and (max-width: 767px) {
+    width: 120px;
+  }
 `
 const FollowPerson = styled.img`
   width: 80px;
@@ -265,7 +350,12 @@ const FollowPerson = styled.img`
   object-fit: cover;
   border-radius: 50%;
   margin-right: 12px;
+  @media screen and (max-width: 767px) {
+    margin-right: 0px;
+    margin-bottom: 8px;
+  }
 `
+
 function Profile() {
   const [fbprofile, setfbProfile] = useState()
   const [checkinToken, setcheckinToken] = useState(false)
@@ -280,6 +370,14 @@ function Profile() {
   const checkinAccount = useRef()
   const checkinPassword = useRef()
   const currImage = images[0]
+  const style = {
+    width: '50%',
+  }
+
+  // useEffect(()=>{
+  //   if(getUserProfile){
+  //   }
+  // })
 
   let jwtToken = window.localStorage.getItem('jwtToken')
 
@@ -329,9 +427,6 @@ function Profile() {
           emailRef.current.value = ''
           images[0] = undefined
           setcheckinToken(true)
-          // const registerInfo = await response.json()
-          // setregisterToken(registerInfo)
-          // getProfileAPI()
         } else if (response.status === 403) {
           alert('email重複註冊')
           setcheckinToken(false)
@@ -426,53 +521,6 @@ function Profile() {
     getProfileAPI()
   }
 
-  // async function getCheckInInfo() {
-  //   let resJSON = await checkIn()
-  //   let resJSONData = await resJSON.data
-  //   let getProfileInfo = {
-  //     token: resJSONData.access_token,
-  //     name: resJSONData.user.name,
-  //     email: resJSONData.user.email,
-  //     photo: resJSONData.user.picture,
-  //   }
-  //   console.log(123)
-  //   window.localStorage.setItem('jwtToken', JSON.stringify(getProfileInfo))
-  //   window.localStorage.removeItem('registerToken')
-  //   setcheckinToken(true)
-  // }
-
-  // async function directToMember() {
-  //   if (!registerToken) {
-  //     console.log('尚未有會員資料')
-  //     alert('尚未有會員資料')
-  //   } else {
-  //     const response = await fetch('https://hazlin.work/api/1.0/user/signin', {
-  //       body: JSON.stringify(checkinData),
-  //       headers: new Headers({
-  //         'Content-Type': 'application/json',
-  //       }),
-  //       method: 'POST',
-  //     })
-  //     if (response.status === 200) {
-  //       // alert('成功登入')
-  //       getCheckInInfo()
-  //       return await response.json()
-  //     }
-  //     // let directInfo = JSON.parse(window.localStorage.getItem('registerToken'))
-  //     // let registernData = {
-  //     //   provider: 'native',
-  //     //   name: directInfo.name,
-  //     //   email: directInfo.email,
-  //     //   password: directInfo.name,
-  //     //   token: directInfo.token,
-  //     // }
-  //     // window.localStorage.removeItem('registerToken')
-  //     // window.localStorage.setItem('jwtToken', JSON.stringify(registernData))
-
-  //     setcheckinToken(true)
-  //   }
-  // }
-
   useEffect(() => {
     if (jwtToken) {
       setcheckinToken(true)
@@ -503,22 +551,22 @@ function Profile() {
               <SubTitle>用以下帳號繼續</SubTitle>
               <Btn onClick={getProfile}>使用Facebook登入</Btn>
               <SubTitle>或用 超會搭 帳號</SubTitle>
-              <Divide>
+              <BtnDivide>
                 <Popup trigger={<BtnMember>註冊</BtnMember>} modal>
                   {(close) => (
                     <BackOver>
                       <Modal>
                         <LoginForm>
-                          <Divide>
-                            <Logo />
-                            <CloseBtn
-                              onClick={() => {
-                                close()
-                              }}
-                            >
-                              x
-                            </CloseBtn>
-                          </Divide>
+                          {/* <Divide> */}
+                          <Logo />
+                          <CloseBtn
+                            onClick={() => {
+                              close()
+                            }}
+                          >
+                            x
+                          </CloseBtn>
+                          {/* </Divide> */}
                           <AccountLabel type="label">超會搭用戶名</AccountLabel>
                           <AccountInput
                             type="text"
@@ -526,7 +574,7 @@ function Profile() {
                           ></AccountInput>
                           <AccountLabel type="label">密碼</AccountLabel>
                           <PasswordInput
-                            type="text"
+                            type="password"
                             ref={passwordRef}
                           ></PasswordInput>
                           <AccountLabel type="label">Email</AccountLabel>
@@ -544,6 +592,7 @@ function Profile() {
                               ))}
                             </UploadPic>
                             <Tag
+                              style={style}
                               type="file"
                               multiple
                               accept="image/*"
@@ -583,7 +632,7 @@ function Profile() {
                           ></AccountInput>
                           <AccountLabel type="label">密碼</AccountLabel>
                           <PasswordInput
-                            type="text"
+                            type="password"
                             ref={checkinPassword}
                           ></PasswordInput>
                           <BecomeMember onClick={checkInProgress}>
@@ -600,7 +649,7 @@ function Profile() {
                     </BackOver>
                   )}
                 </Popup>
-              </Divide>
+              </BtnDivide>
             </MainLogin>
           </>
         </Wrapper>
