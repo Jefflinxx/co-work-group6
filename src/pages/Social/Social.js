@@ -924,20 +924,15 @@ function Social() {
       socket.current = io.connect("https://hazlin.work/", {
         extraHeaders: {
           Authorization: `Bearer ${JSON.parse(localStorage.jwtToken).token}`,
+          transports: ["websocket"],
         },
-        transports: ["websocket"],
       });
     }
 
-    // message from server
-    // socket.current.on("liked", (msg) => {
-    //   console.log("msg: ", msg);
-    // });
-    // notification from server
-    // socket.current.on("followed", (msg) => {
-    //   console.log("msg: ", msg);
-    // });
-  }, [socket]);
+    socket.current.on("connect", () => {
+      console.log("social socket id", socket.current.id); // "G5p5..."
+    });
+  }, []);
 
   return (
     <>
