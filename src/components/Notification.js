@@ -28,7 +28,6 @@ const NotificationDiv = styled.div`
   opacity: ${(props) => (props.socketLike.includes(props.$on) ? 1 : 0)};
   margin-top: ${(props) =>
     props.socketLike.includes(props.$on) ? "10px" : "0px"};
-  margin-top: 20px;
 
   transition: all 1s;
 
