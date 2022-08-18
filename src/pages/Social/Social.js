@@ -941,9 +941,13 @@ function Social() {
           {/* 動畫模式 */}
           <AnimateDiv $mode={mode}>
             <AnimateWrapper>
-              {postData.list.slice(0, 13).map((i, index) => {
-                return <AnimateImg key={index} src={i.postPic}></AnimateImg>;
-              })}
+              {postData.list.length >= 12
+                ? postData.list.slice(0, 13)?.map((i, index) => {
+                    return (
+                      <AnimateImg key={index} src={i.postPic}></AnimateImg>
+                    );
+                  })
+                : null}
             </AnimateWrapper>
           </AnimateDiv>
 

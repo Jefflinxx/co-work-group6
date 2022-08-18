@@ -153,7 +153,7 @@ function App() {
             const a = [...prev];
             return a;
           });
-        }, 2000);
+        }, 5000);
       });
       // notification from server
       socket.current.on("followed", (msg) => {
