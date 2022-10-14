@@ -4,6 +4,11 @@
 
 A social network website based on STYLiSH that enables users to upload posts, share fashionable outfits, browse the social page to like, save or follow the posts.
 
+<h1>Demo</h1>
+
+<image src="">
+<image src="">
+
 <h1>Tech</h1>
 
 <span><image src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/></span>
