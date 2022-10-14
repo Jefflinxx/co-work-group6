@@ -6,8 +6,8 @@ A social network website based on STYLiSH that enables users to upload posts, sh
 
 <h1>Demo</h1>
 
-<image src="">
-<image src="">
+<image src="./1.png">
+<image src="./2.png">
 
 <h1>Tech</h1>
 
